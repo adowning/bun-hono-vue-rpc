@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { router } from '@/router'
-import { LocationQueryRaw, Router } from 'vue-router'
-import { WorkTab } from '@/types'
 import { useCommon } from '@/composables/useCommon'
+import type { WorkTab } from '@/types'
+import type { LocationQueryRaw, Router } from 'vue-router'
 
 interface WorktabState {
   current: Partial<WorkTab>
@@ -113,14 +113,14 @@ export const useWorktabStore = defineStore(
           path: tab.path,
           params: tab.params,
           query: tab.query,
-          title: tab.title || existingTab.title,
-          fixedTab: tab.fixedTab ?? existingTab.fixedTab,
-          keepAlive: tab.keepAlive ?? existingTab.keepAlive,
-          name: tab.name || existingTab.name,
-          icon: tab.icon || existingTab.icon
+          title: tab.title || existingTab!.title,
+          fixedTab: tab.fixedTab ?? existingTab!.fixedTab,
+          keepAlive: tab.keepAlive ?? existingTab!.keepAlive,
+          name: tab.name || existingTab!.name,
+          icon: tab.icon || existingTab!.icon
         }
 
-        current.value = opened.value[existingIndex]
+        current.value = opened.value[existingIndex]!
       }
     }
 
@@ -130,7 +130,7 @@ export const useWorktabStore = defineStore(
     const findFixedTabInsertIndex = (): number => {
       let insertIndex = 0
       for (let i = 0; i < opened.value.length; i++) {
-        if (opened.value[i].fixedTab) {
+        if (opened.value[i]!.fixedTab!) {
           insertIndex = i + 1
         } else {
           break
@@ -178,7 +178,7 @@ export const useWorktabStore = defineStore(
       // 如果关闭的是当前激活标签，需要激活其他标签
       if (current.value.path === path) {
         const newIndex = targetIndex >= opened.value.length ? opened.value.length - 1 : targetIndex
-        current.value = opened.value[newIndex]
+        current.value = opened.value[newIndex]!
         safeRouterPush(current.value)
       }
     }
@@ -321,8 +321,8 @@ export const useWorktabStore = defineStore(
       const homeTab = opened.value.find((tab) => tab.path === homePath.value)
       const targetTab = homeTab || opened.value[0]
 
-      current.value = targetTab
-      safeRouterPush(targetTab)
+      current.value = targetTab!
+      safeRouterPush(targetTab!)
     }
 
     /**
@@ -428,7 +428,7 @@ export const useWorktabStore = defineStore(
 
         if (!isCurrentValid && validTabs.length > 0) {
           console.warn('当前激活标签无效，已自动切换')
-          current.value = validTabs[0]
+          current.value = validTabs[0]!
         } else if (!isCurrentValid) {
           current.value = {}
         }

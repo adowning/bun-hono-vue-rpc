@@ -23,7 +23,7 @@ app.use(
 )
 
 console.log('Hono server with Drizzle (Postgres) running on http://localhost:3000')
-const typedApp = app.route('/users', userRoutes).route('/games', gameRoutes) //.route('/betting', bettingRouter);
+const typedApp = app.route('/users', userRoutes).route('/games', gameRoutes) // .route('/betting', bettingRouter);
 
 // Export the *type* of the RPC routes for the client
 export type AppType = typeof typedApp

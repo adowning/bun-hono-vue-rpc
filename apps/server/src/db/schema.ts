@@ -382,8 +382,10 @@ export const betLogTable = pgTable(
     wagerAmount: integer('wager_amount').notNull(), // Total wager (real + bonus)
     winAmount: integer('win_amount').notNull(),
 
-    // --- How the bet was paid (for auditing) ---
-    // wagerAmount = wagerPaidFromReal + wagerPaidFromBonus
+    /*
+     * --- How the bet was paid (for auditing) ---
+     * wagerAmount = wagerPaidFromReal + wagerPaidFromBonus
+     */
     wagerPaidFromReal: integer('wager_paid_from_real').default(0).notNull(),
     wagerPaidFromBonus: integer('wager_paid_from_bonus').default(0).notNull(),
 
@@ -468,8 +470,10 @@ export const betLogInsertSchema = createInsertSchema(betLogTable)
 export type BetLog = typeof betLogTable.$inferSelect
 export type NewBetLog = typeof betLogTable.$inferInsert
 
-// --- CurrentUser (Composite Zod Schema) ---
-// This schema aggregates all state for the logged-in user.
+/*
+ * --- CurrentUser (Composite Zod Schema) ---
+ * This schema aggregates all state for the logged-in user.
+ */
 
 export const CurrentUserSchema = z.object({
   // Core user information

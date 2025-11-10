@@ -90,6 +90,7 @@
 
 <script setup lang="ts">
   import { fetchLogin } from '@/api/auth'
+  import { getMe } from '@/api/client'
   import { useUserStore } from '@/store/modules/user'
   import { computed, ref } from 'vue'
   import { useI18n } from 'vue-i18n'

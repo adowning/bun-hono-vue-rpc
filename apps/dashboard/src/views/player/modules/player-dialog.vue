@@ -56,7 +56,7 @@
   const props = defineProps<Props>()
   const emit = defineEmits<Emits>()
 
-// Role list data
+  // Role list data
   const roleList = ref(ROLE_LIST_DATA)
 
   // Dialog display control
@@ -86,7 +86,11 @@
     ],
     phone: [
       { required: true, message: 'Please enter phone number', trigger: 'blur' },
-      { pattern: /^1[3-9]\d{9}$/, message: 'Please enter correct phone number format', trigger: 'blur' }
+      {
+        pattern: /^1[3-9]\d{9}$/,
+        message: 'Please enter correct phone number format',
+        trigger: 'blur'
+      }
     ],
     gender: [{ required: true, message: 'Please select gender', trigger: 'blur' }],
     role: [{ required: true, message: 'Please select role', trigger: 'blur' }]
@@ -134,7 +138,9 @@
 
     await formRef.value.validate((valid) => {
       if (valid) {
-        ElMessage.success(dialogType.value === 'add' ? 'Added successfully' : 'Updated successfully')
+        ElMessage.success(
+          dialogType.value === 'add' ? 'Added successfully' : 'Updated successfully'
+        )
         dialogVisible.value = false
         emit('submit')
       }

@@ -8,8 +8,7 @@ import { ref } from 'vue'
  * 菜单状态管理
  * 管理应用的菜单列表、首页路径、菜单宽度和动态路由移除函数
  */
-export const useMenuStore = defineStore('menuStore', () =>
-{
+export const useMenuStore = defineStore('menuStore', () => {
   /** 首页路径 */
   const homePath = ref(HOME_PAGE_PATH)
   /** 菜单列表 */
@@ -23,8 +22,7 @@ export const useMenuStore = defineStore('menuStore', () =>
    * 设置菜单列表
    * @param list 菜单路由记录数组
    */
-  const setMenuList = (list: AppRouteRecord[]) =>
-  {
+  const setMenuList = (list: AppRouteRecord[]) => {
     console.log('HOME_PAGE_PATH ', HOME_PAGE_PATH)
     menuList.value = list
     setHomePath(HOME_PAGE_PATH || getFirstMenuPath(list))
@@ -40,8 +38,7 @@ export const useMenuStore = defineStore('menuStore', () =>
    * 设置主页路径
    * @param path 主页路径
    */
-  const setHomePath = (path: string) =>
-  {
+  const setHomePath = (path: string) => {
     homePath.value = path
   }
 
@@ -49,8 +46,7 @@ export const useMenuStore = defineStore('menuStore', () =>
    * 添加路由移除函数
    * @param fns 要添加的路由移除函数数组
    */
-  const addRemoveRouteFns = (fns: (() => void)[]) =>
-  {
+  const addRemoveRouteFns = (fns: (() => void)[]) => {
     removeRouteFns.value.push(...fns)
   }
 
@@ -58,8 +54,7 @@ export const useMenuStore = defineStore('menuStore', () =>
    * 移除所有动态路由
    * 执行所有存储的路由移除函数并清空数组
    */
-  const removeAllDynamicRoutes = () =>
-  {
+  const removeAllDynamicRoutes = () => {
     removeRouteFns.value.forEach((fn) => fn())
     removeRouteFns.value = []
   }
@@ -67,8 +62,7 @@ export const useMenuStore = defineStore('menuStore', () =>
   /**
    * 清空路由移除函数数组
    */
-  const clearRemoveRouteFns = () =>
-  {
+  const clearRemoveRouteFns = () => {
     removeRouteFns.value = []
   }
 

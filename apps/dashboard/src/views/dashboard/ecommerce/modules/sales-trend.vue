@@ -7,7 +7,11 @@
       </div>
     </div>
 
-    <ArtDualBarCompareChart :positiveData="[50, 80, 120, 90, 60]" :negativeData="[30, 60, 90, 70, 40]"
-      :xAxisData="['January', 'February', 'March', 'April', 'May']" height="19rem" />
+    <ArtDualBarCompareChart
+      :positiveData="[50, 80, 120, 90, 60]"
+      :negativeData="[30, 60, 90, 70, 40]"
+      :xAxisData="['January', 'February', 'March', 'April', 'May']"
+      height="19rem"
+    />
   </div>
 </template>

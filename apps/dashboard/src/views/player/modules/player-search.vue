@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-mutating-props -->
 <template>
   <el-form :model="searchForm" inline>
     <el-form-item label="Display Name">
@@ -10,10 +11,10 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  searchForm: {
-    displayName: string
-    email: string
-  }
-}>()
+  defineProps<{
+    searchForm: {
+      displayName: string
+      email: string
+    }
+  }>()
 </script>

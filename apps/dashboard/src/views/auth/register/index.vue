@@ -252,11 +252,11 @@
   /**
    * 跳转到登录页面
    */
-  const toLogin = () => {
-    setTimeout(() => {
-      router.push({ name: 'Login' })
-    }, REDIRECT_DELAY)
-  }
+  // const toLogin = () => {
+  //   setTimeout(() => {
+  //     router.push({ name: 'Login' })
+  //   }, REDIRECT_DELAY)
+  // }
 </script>
 
 <style scoped>

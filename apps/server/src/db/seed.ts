@@ -188,7 +188,7 @@ class UserSimulator {
       operatorId: HOUSE_ID,
       triggeringDepositId: depositId,
       bonusType: 'DEPOSIT_MATCH',
-      bonusAmount: bonusAmount,
+      bonusAmount,
       wageringRequirementTotal: bonusWagering,
       priority: BONUS_PRIORITY,
       expiresInDays: BONUS_EXPIRES_DAYS,
@@ -197,12 +197,12 @@ class UserSimulator {
     const activeBonus: ActiveBonus = {
       id: faker.string.uuid(),
       userId: this.userId,
-      bonusLogId: bonusLogId,
+      bonusLogId,
       status: 'ACTIVE',
       priority: BONUS_PRIORITY,
       currentBonusBalance: bonusAmount,
       currentWageringRemaining: bonusWagering,
-      expiresAt: expiresAt,
+      expiresAt,
       createdAt: simDate,
       updatedAt: simDate
     }
@@ -301,13 +301,13 @@ class UserSimulator {
       userId: this.userId,
       operatorId: HOUSE_ID,
       status: 'COMPLETED',
-      wagerAmount: wagerAmount,
-      winAmount: winAmount,
-      wagerPaidFromReal: wagerPaidFromReal,
-      wagerPaidFromBonus: wagerPaidFromBonus,
+      wagerAmount,
+      winAmount,
+      wagerPaidFromReal,
+      wagerPaidFromBonus,
       gameId: game.id,
       gameName: game.name,
-      gameSessionId: gameSessionId,
+      gameSessionId,
       createdAt: simDate
     })
     this.balance.totalWagered += wagerAmount
@@ -324,7 +324,7 @@ class UserSimulator {
     ) {
       return
     }
-    let isAutoWithdraw = this.balance.realBalance > this.totalDeposited * AUTOWITHDRAW_MULTIPLIER
+    const isAutoWithdraw = this.balance.realBalance > this.totalDeposited * AUTOWITHDRAW_MULTIPLIER
     if (!isAutoWithdraw && Math.random() > CHANCE_TO_WITHDRAW) {
       return
     }
@@ -510,13 +510,13 @@ const main = async () => {
       ownerId: 'system'
     })
     .returning()
-
+  if (!house) throw new Error(' you have no house operator')
   // 3. Load and Insert Games from JSON
   console.log('Loading games from games.json...')
   // Assumes games.json is in the root, parallel to 'apps'
   const gamesJsonPath = path.join(__dirname, '../../../../games.json')
   let gameInserts: NewGame[] = []
-  let gameBaselineStats = new Map<string, GameStatsTracker>()
+  const gameBaselineStats = new Map<string, GameStatsTracker>()
 
   try {
     const gamesString = fs.readFileSync(gamesJsonPath, 'utf-8')
@@ -584,14 +584,15 @@ const main = async () => {
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName()
     })
+
     const user: NewUser = {
       id: faker.string.uuid(),
       authId: faker.string.uuid(),
       operatorId: house.id,
-      email: email,
+      email,
       displayName: faker.internet.username(),
       roles: ['USER'],
-      createdAt: createdAt
+      createdAt
     }
     users.push(user)
 
@@ -601,7 +602,7 @@ const main = async () => {
     const newBalance: NewUserBalance = {
       id: balanceId,
       userId: user.id!,
-      createdAt: createdAt
+      createdAt
     }
     userBalances.push(newBalance)
 
@@ -609,7 +610,7 @@ const main = async () => {
     const initialSimState: UserBalance = {
       id: balanceId,
       userId: user.id!,
-      createdAt: createdAt,
+      createdAt,
       updatedAt: createdAt,
       realBalance: 0,
       freeSpinsRemaining: 0,

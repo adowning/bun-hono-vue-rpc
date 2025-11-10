@@ -1,18 +1,8 @@
 <script setup lang="ts">
   import { ref, computed, watch, nextTick } from 'vue'
-  import {
-    Plus,
-    Delete,
-    Edit,
-    Search,
-    Refresh,
-    QuestionFilled,
-    ArrowDown
-  } from '@element-plus/icons-vue'
-  import { ElMessageBox, rowContextKey } from 'element-plus'
+  import { Plus, Delete, Edit, Search, Refresh, ArrowDown } from '@element-plus/icons-vue'
+  import { ElMessageBox } from 'element-plus'
   import { useTable, CacheInvalidationStrategy } from '@/composables/useTable'
-  import { fetchGetUserList } from '@/api/system-manage'
-  import { ACCOUNT_TABLE_DATA } from '@/mock/temp/formData'
   import { getColumnKey } from '@/composables/useTableColumns'
   import { getAllUsersWithBalance } from '@/api/client'
 
@@ -79,7 +69,7 @@
       }
     ]
   }
-  const tableData = ref<any[]>([])
+  // const tableData = ref<any[]>([])
   // Form search initial values
   const searchFormState = ref({
     name: '',
@@ -414,7 +404,7 @@
       dataTransformer: (records) => {
         if (!Array.isArray(records)) return []
 
-        return records.map((item, index: number) => ({
+        return records.map((item) => ({
           ...item,
           avatar: `https://gameui.cashflowcasino.com/public/avatars/${item.avatar.replace(
             'avif',
@@ -757,7 +747,7 @@
       requestParams.value = { ...requestParams.value, current: page }
 
       // Switch to test page
-      handleCurrentChange(page)
+      handleCurrentChange(page!)
       index++
     }, 1000)
   }

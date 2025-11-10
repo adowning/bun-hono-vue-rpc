@@ -3,7 +3,7 @@
  * 控制顶部栏各种功能的启用/禁用状态
  */
 
-import { HeaderBarFeatureConfig } from '@/types'
+import type { HeaderBarFeatureConfig } from '@/types'
 
 // 顶部栏功能配置
 export const headerBarConfig: HeaderBarFeatureConfig = {

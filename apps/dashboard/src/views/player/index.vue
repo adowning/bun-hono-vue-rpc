@@ -25,7 +25,7 @@
   // import { ArtTableHeader, ArtTable } from '@/components/core/tables'
   import PlayerSearch from './modules/player-search.vue'
   // import PlayerDialog from './modules/player-dialog.vue' // No longer used for edits
-  import { format, formatDistanceToNow } from 'date-fns'
+  import { formatDistanceToNow } from 'date-fns'
 
   const router = useRouter()
 

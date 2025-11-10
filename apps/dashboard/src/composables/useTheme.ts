@@ -1,8 +1,8 @@
 import { useSettingStore } from '@/store/modules/setting'
 import { SystemThemeEnum } from '@/enums/appEnum'
 import AppConfig from '@/config'
-import { SystemThemeTypes } from '@/types/store'
 import { getDarkColor, getLightColor } from '@/utils/ui'
+import type { SystemThemeTypes } from '@/types'
 
 export function useTheme() {
   const settingStore = useSettingStore()
@@ -38,7 +38,7 @@ export function useTheme() {
     const currentTheme = AppConfig.systemThemeStyles[theme as keyof SystemThemeTypes]
 
     if (currentTheme) {
-      el.setAttribute('class', currentTheme.className)
+      el!.setAttribute('class', currentTheme.className)
     }
 
     // 设置按钮颜色加深或变浅
@@ -47,7 +47,9 @@ export function useTheme() {
     for (let i = 1; i <= 9; i++) {
       document.documentElement.style.setProperty(
         `--el-color-primary-light-${i}`,
-        isDark ? `${getDarkColor(primary, i / 10)}` : `${getLightColor(primary, i / 10)}`
+        isDark
+          ? `${getDarkColor(primary as string, i / 10)}`
+          : `${getLightColor(primary as string, i / 10)}`
       )
     }
 

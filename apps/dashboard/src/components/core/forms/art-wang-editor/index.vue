@@ -179,7 +179,10 @@
         retryCount++
         setTimeout(tryApplyIcons, retryDelay)
       } else {
-        console.warn('Toolbar rendering timeout, unable to apply custom icons - Editor instance:', editor.id)
+        console.warn(
+          'Toolbar rendering timeout, unable to apply custom icons - Editor instance:',
+          editor.id
+        )
       }
     }
 

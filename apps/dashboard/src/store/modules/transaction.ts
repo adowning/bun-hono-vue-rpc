@@ -5,10 +5,10 @@ import type { PaginationParams, TransactionType } from '../../../../shared/types
 
 // Pagination meta for responses
 export interface PaginationMeta {
-  page: number;
-  perPage: number;
-  total: number;
-  totalPages: number;
+  page: number
+  perPage: number
+  total: number
+  totalPages: number
 }
 
 export const useTransactionStore = defineStore('transactions', () => {

@@ -125,19 +125,20 @@
         />
       </ElCol>
       <ElCol :md="24" :lg="16" class="no-margin-bottom">
-        <HotProductsList :data="dashboardData.hotProductsList" />
+        <HotProductsList
+          :data="dashboardData.hotProductsList.data"
+          :title="dashboardData.hotProductsList.title"
+        />
       </ElCol>
     </ElRow>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { dataTool } from 'echarts'
   import CardList from './modules/card-list.vue'
   import HotCommodity from './modules/hot-commodity.vue'
   import HotProductsList from './modules/hot-products-list.vue'
   import RecentTransaction from './modules/recent-transaction.vue'
-  import TransactionList from './modules/transaction-list.vue'
 
   defineOptions({ name: 'Ecommerce' })
   // Define the shape of our new data

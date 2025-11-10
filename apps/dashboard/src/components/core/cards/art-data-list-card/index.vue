@@ -47,34 +47,11 @@
 <script setup lang="ts">
   defineOptions({ name: 'ArtDataListCard' })
 
-  interface Props {
-    /** 数据列表 */
-    list: Activity[]
-    /** 标题 */
-    title: string
-    /** 副标题 */
-    subtitle?: string
-    /** 最大显示数量 */
-    maxCount?: number
-    /** 是否显示更多按钮 */
-    showMoreButton?: boolean
-  }
-
-  interface Activity {
-    /** 标题 */
-    user: string
-    /** 状态 */
-    type: string
-    /** 时间 */
-    amount: number
-    /** 样式类名 */
-    status: string
-    /** 图标 */
-    timestamp: Date
-  }
+  /**
+   * Activity data interface
+   */
 
   const ITEM_HEIGHT = 66
-  const DEFAULT_MAX_COUNT = 5
 
   const props = withDefaults(
     defineProps<{

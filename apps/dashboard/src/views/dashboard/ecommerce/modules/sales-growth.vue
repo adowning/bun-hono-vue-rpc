@@ -10,7 +10,14 @@
       </div>
     </div>
 
-    <ArtLineChart :showAreaColor="true" :showAxisLabel="false" :showAxisLine="false" :showSplitLine="false"
-      :data="[50, 85, 65, 95, 75, 130, 180]" barWidth="16px" height="5rem" />
+    <ArtLineChart
+      :showAreaColor="true"
+      :showAxisLabel="false"
+      :showAxisLine="false"
+      :showSplitLine="false"
+      :data="[50, 85, 65, 95, 75, 130, 180]"
+      barWidth="16px"
+      height="5rem"
+    />
   </div>
 </template>

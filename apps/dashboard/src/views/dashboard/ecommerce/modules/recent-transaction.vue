@@ -33,17 +33,16 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from 'vue'
-  import { format, formatDistanceToNow } from 'date-fns'
+  import { formatDistanceToNow } from 'date-fns'
 
-  const props = withDefaults(
+  withDefaults(
     defineProps<{
       title: string
       data: any[]
-      showActivity?: boolean // Our new prop
+      showActivity?: boolean
     }>(),
     {
-      showActivity: true // Default to true for "Recent Activities"
+      showActivity: true
     }
   )
 

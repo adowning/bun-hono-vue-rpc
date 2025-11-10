@@ -9,8 +9,7 @@ import avatar7 from '@/assets/img/avatar/avatar7.webp'
 import avatar8 from '@/assets/img/avatar/avatar8.webp'
 import avatar9 from '@/assets/img/avatar/avatar9.webp'
 
-export interface User
-{
+export interface User {
   id: number
   username: string
   gender: 1 | 0
@@ -191,8 +190,7 @@ export const ACCOUNT_TABLE_DATA: User[] = [
   }
 ]
 
-export interface Role
-{
+export interface Role {
   roleName: string
   roleCode: string
   des: string

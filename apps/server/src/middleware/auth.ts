@@ -22,13 +22,17 @@ if (!SUPABASE_SERVICE_KEY)
   SUPABASE_SERVICE_KEY =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNycWJhemNzcm5jdmJuYXB1eGNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDk1MDYsImV4cCI6MjA3Njg4NTUwNn0.AQdRVvPqeK8l8NtTwhZhXKnjPIIcv_4dRU-bSZkVPs8'
 const SUPABASE_PUBLISHABLE_KEY = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNycWJhemNzcm5jdmJuYXB1eGNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDk1MDYsImV4cCI6MjA3Njg4NTUwNn0.AQdRVvPqeK8l8NtTwhZhXKnjPIIcv_4dRU-bSZkVPs8`
-// Initialize Supabase admin client (uses service key)
-// const supabaseUrl = process.env.SUPABASE_URL;
-// const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
+/*
+ * Initialize Supabase admin client (uses service key)
+ * const supabaseUrl = process.env.SUPABASE_URL;
+ * const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
+ */
 
-// if (!supabaseUrl || !supabaseServiceKey) {
-//   throw new Error("Supabase URL or Service Key is not defined in .env");
-// }
+/*
+ * if (!supabaseUrl || !supabaseServiceKey) {
+ *   throw new Error("Supabase URL or Service Key is not defined in .env");
+ * }
+ */
 
 // const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -74,7 +78,7 @@ async function buildCurrentUser(session: Session, sessionId: string): Promise<Cu
         .returning()
       userRecord = newUser
     }
-
+    if (!userRecord) throw new Error('wtf mate')
     // 2. Get or create user balance
     const [balance] = (await db
       .select()
@@ -119,18 +123,22 @@ async function buildCurrentUser(session: Session, sessionId: string): Promise<Cu
         )
       )
       .limit(1)) as [GameSessionType | undefined]
-    //console.log(authUser)
-    // 4. Extract session information from auth user
-    // const sessionId = sessionId || authUser.id;
+    /*
+     * console.log(authUser)
+     *  4. Extract session information from auth user
+     *  const sessionId = sessionId || authUser.id;
+     */
     const sessionExpiresAt = session?.expires_at ? new Date(session.expires_at * 1000) : null
     const sessionRefreshToken = session?.refresh_token || null
 
-    // 5. Find operator (if any)
-    // const [operator] = await db
-    //   .select()
-    //   .from(operatorTable)
-    //   .where(eq(operatorTable.id, authUser.user_metadata.operatorId))
-    //   .limit(1) as [any];
+    /*
+     * 5. Find operator (if any)
+     * const [operator] = await db
+     *   .select()
+     *   .from(operatorTable)
+     *   .where(eq(operatorTable.id, authUser.user_metadata.operatorId))
+     *   .limit(1) as [any];
+     */
 
     // 6. Build the comprehensive currentUser object
     const currentUser: CurrentUser = {
@@ -152,24 +160,26 @@ async function buildCurrentUser(session: Session, sessionId: string): Promise<Cu
       sessionRefreshToken,
       operatorId: authUser.user_metadata.operatorId,
       balance: balanceRecord,
-      // balance: {
-      //   id: balanceRecord.id,
-      //   userId: balanceRecord.userId,
-      //   realBalance: balanceRecord.realBalance,
-      //   bonusBalance: balanceRecord.bonusBalance,
-      //   freeSpinsRemaining: balanceRecord.freeSpinsRemaining,
-      //   depositWageringRemaining: balanceRecord.depositWageringRemaining,
-      //   bonusWageringRemaining: balanceRecord.bonusWageringRemaining,
-      //   totalDepositedReal: balanceRecord.totalDepositedReal,
-      //   totalDepositedBonus: balanceRecord.totalDepositedBonus,
-      //   totalWithdrawn: balanceRecord.totalWithdrawn,
-      //   totalWagered: balanceRecord.totalWagered,
-      //   totalWon: balanceRecord.totalWon,
-      //   totalBonusGranted: balanceRecord.totalBonusGranted,
-      //   totalFreeSpinWins: balanceRecord.totalFreeSpinWins,
-      //   createdAt: balanceRecord.createdAt || new Date(),
-      //   updatedAt: balanceRecord.updatedAt || new Date()
-      // },
+      /*
+       * balance: {
+       *   id: balanceRecord.id,
+       *   userId: balanceRecord.userId,
+       *   realBalance: balanceRecord.realBalance,
+       *   bonusBalance: balanceRecord.bonusBalance,
+       *   freeSpinsRemaining: balanceRecord.freeSpinsRemaining,
+       *   depositWageringRemaining: balanceRecord.depositWageringRemaining,
+       *   bonusWageringRemaining: balanceRecord.bonusWageringRemaining,
+       *   totalDepositedReal: balanceRecord.totalDepositedReal,
+       *   totalDepositedBonus: balanceRecord.totalDepositedBonus,
+       *   totalWithdrawn: balanceRecord.totalWithdrawn,
+       *   totalWagered: balanceRecord.totalWagered,
+       *   totalWon: balanceRecord.totalWon,
+       *   totalBonusGranted: balanceRecord.totalBonusGranted,
+       *   totalFreeSpinWins: balanceRecord.totalFreeSpinWins,
+       *   createdAt: balanceRecord.createdAt || new Date(),
+       *   updatedAt: balanceRecord.updatedAt || new Date()
+       * },
+       */
       activeGameSession: activeSession
         ? {
             ...activeSession,
@@ -178,21 +188,25 @@ async function buildCurrentUser(session: Session, sessionId: string): Promise<Cu
             totalWon: activeSession.totalWon || 0,
             totalBets: activeSession.totalBets || 0,
             gameSessionRtp: activeSession.gameSessionRtp || 0,
-            // playerStartingBalance: activeSession.playerStartingBalance,
-            // playerEndingBalance: activeSession.playerEndingBalance,
+            /*
+             * playerStartingBalance: activeSession.playerStartingBalance,
+             * playerEndingBalance: activeSession.playerEndingBalance,
+             */
             duration: activeSession.duration || 0,
             createdAt: activeSession.createdAt || new Date(),
             updatedAt: activeSession.updatedAt || new Date()
           }
         : null,
-      // ? {
-      //   id: operator.id,
-      //   name: operator.name,
-      //   ownerId: operator.ownerId,
-      //   isActive: operator.isActive,
-      //   createdAt: operator.createdAt,
-      //   updatedAt: operator.updatedAt
-      // } : null,
+      /*
+       * ? {
+       *   id: operator.id,
+       *   name: operator.name,
+       *   ownerId: operator.ownerId,
+       *   isActive: operator.isActive,
+       *   createdAt: operator.createdAt,
+       *   updatedAt: operator.updatedAt
+       * } : null,
+       */
       lastUpdated: new Date()
     }
 
@@ -322,16 +336,15 @@ export async function refreshCurrentUser(currentUser: CurrentUser): Promise<Curr
         id: balance.id,
         userId: balance.userId,
         realBalance: balance.realBalance,
-        bonusBalance: balance.bonusBalance,
+        totalBonusGranted: balance.totalBonusGranted,
         freeSpinsRemaining: balance.freeSpinsRemaining,
         depositWageringRemaining: balance.depositWageringRemaining,
-        bonusWageringRemaining: balance.bonusWageringRemaining,
+        // bonusWageringRemaining: balance.bonusWageringRemaining,
         totalDepositedReal: balance.totalDepositedReal,
-        totalDepositedBonus: balance.totalDepositedBonus,
+        // totalDepositedBonus: balance.totalDepositedBonu,
         totalWithdrawn: balance.totalWithdrawn,
         totalWagered: balance.totalWagered,
         totalWon: balance.totalWon,
-        totalBonusGranted: balance.totalBonusGranted,
         totalFreeSpinWins: balance.totalFreeSpinWins,
         createdAt: balance.createdAt || new Date(),
         updatedAt: balance.updatedAt || new Date()

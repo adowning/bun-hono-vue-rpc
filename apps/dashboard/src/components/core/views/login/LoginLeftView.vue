@@ -71,7 +71,6 @@
 </template>
 
 <script setup lang="ts">
-  import AppConfig from '@/config'
   import loginIcon from '@imgs/svg/login_icon.svg'
   import { themeAnimation } from '@/utils/theme/animation'
 

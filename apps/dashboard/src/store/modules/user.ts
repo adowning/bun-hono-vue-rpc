@@ -1,15 +1,14 @@
-import { GetMeDataType } from '@/api/client'
 import { LanguageEnum } from '@/enums/appEnum'
 import { router } from '@/router'
 import { resetRouterState } from '@/router/guards/beforeEach'
 import { setPageTitle } from '@/router/utils/utils'
-import { AppRouteRecord } from '@/types/router'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useMenuStore } from './menu'
 import { useSettingStore } from './setting'
 import { useWorktabStore } from './worktab'
-import { CurrentUser } from 'server/shared'
+import type { CurrentUser } from 'server/shared'
+import type { AppRouteRecord } from '@/types'
 
 /**
  * 用户状态管理

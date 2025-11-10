@@ -1,8 +1,8 @@
-import 'dotenv/config'; // Load .env file
-import type { Config } from 'drizzle-kit';
+import 'dotenv/config' // Load .env file
+import type { Config } from 'drizzle-kit'
 
 if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL is not set in .env file');
+  throw new Error('DATABASE_URL is not set in .env file')
 }
 
 export default {
@@ -11,6 +11,6 @@ export default {
   dialect: 'postgresql', // Changed from 'sqlite'
   casing: 'snake_case',
   dbCredentials: {
-    url: process.env.DATABASE_URL, // Use the env variable
-  },
-} satisfies Config;
+    url: process.env.DATABASE_URL // Use the env variable
+  }
+} satisfies Config

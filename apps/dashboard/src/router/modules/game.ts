@@ -7,10 +7,10 @@ export const gameRoutes: AppRouteRecord = {
   // component: '/game/list',
   meta: {
     title: 'Games',
-    icon: 'ri:game-line',
+    icon: 'ri:game-line'
     // roles: ['R_SUPER', 'R_ADMIN']
     // roles: ['USER', 'R_ADMIN']
-  },
+  }
   // children: [
   //   {
   //     path: 'game-list',

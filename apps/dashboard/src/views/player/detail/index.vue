@@ -49,6 +49,34 @@
       </div>
       <div class="flex-1 overflow-hidden max-md:w-full max-md:mt-3.5">
         <el-collapse v-model="activeTab" accordion>
+          <el-collapse-item title="Player Stats (Bet Logs)" name="0">
+            <div class="art-card-sm">
+              <ElScrollbar style="height: 21.55rem" class="w-full">
+                <div class="overflow-auto h-full">
+                  <div v-if="loadingStats">Loading stats...</div>
+                  <ArtTable v-else :data="betLogs" style="width: 100%" size="large">
+                    <ElTableColumn prop="createdAt" label="Date" width="180">
+                      <template #default="scope">
+                        {{ new Date(scope.row.createdAt).toLocaleString() }}
+                      </template>
+                    </ElTableColumn>
+                    <ElTableColumn prop="gameName" label="Game" />
+                    <ElTableColumn prop="wagerAmount" label="Wager">
+                      <template #default="scope">
+                        {{ (scope.row.wagerAmount / 100).toFixed(2) }}
+                      </template>
+                    </ElTableColumn>
+                    <ElTableColumn prop="winAmount" label="Win">
+                      <template #default="scope">
+                        {{ (scope.row.winAmount / 100).toFixed(2) }}
+                      </template>
+                    </ElTableColumn>
+                    <ElTableColumn prop="status" label="Status" />
+                  </ArtTable>
+                </div>
+              </ElScrollbar>
+            </div>
+          </el-collapse-item>
           <el-collapse-item title="Player Stats" name="1">
             <div class="art-card-sm">
               <div class="overflow-auto h-full">
@@ -89,8 +117,11 @@
                 </ArtTable>
               </div>
             </div>
+            <el-collapse-item title="Basic Settings" name="2"> </el-collapse-item>
+            <el-collapse-item title="Change Password" name="3"> </el-collapse-item>
+            <el-collapse-item title="Deposit Logs" name="4"> </el-collapse-item>
           </el-collapse-item>
-          <el-collapse-item title="Basic Settings" name="2">
+          <el-collapse-item title="Basic Settings" name="5">
             <div class="art-card-sm">
               <!-- <h1 class="p-4 text-xl font-normal border-b border-g-300">Basic Settings</h1> -->
 
@@ -148,7 +179,7 @@
               </ElForm>
             </div>
           </el-collapse-item>
-          <el-collapse-item title="Change Password" name="3">
+          <el-collapse-item title="Change Password" name="6">
             <div class="art-card-sm my-5">
               <!-- <h1 class="p-4 text-xl font-normal border-b border-g-300">Change Password</h1> -->
 
@@ -200,11 +231,11 @@
 </template>
 
 <script setup lang="ts">
-  import { getUserDetails } from '@/api/client'
+  import { getPlayerBetLogs, getUserDetails } from '@/api/client'
   import { useUserStore } from '@/store/modules/user'
   import type { FormInstance, FormRules } from 'element-plus'
   import { hexToRgb } from '@/utils/ui'
-
+  // import type { UserDetail, BetLog, PaginationParams } from '../../../../../server/src/shared'
   defineOptions({ name: 'UserCenter' })
   const route = useRoute()
 
@@ -269,14 +300,6 @@
   /**
    * User label list
    */
-  const lableList: Array<string> = [
-    'Design Focused',
-    'Creative Thinker',
-    'Spicy~',
-    'Long Legs',
-    'Sichuan Girl',
-    'Inclusive'
-  ]
   interface Product {
     name: string
     popularity: number
@@ -342,5 +365,53 @@
    */
   const editPwd = () => {
     isEditPwd.value = !isEditPwd.value
+  }
+  const userDetail = ref<any>(null) // Use a proper type e.g., UserDetail
+  const betLogs = ref<any[]>([]) // e.g., BetLog[]
+  const loadingStats = ref(false)
+  const statsPagination = ref({ page: 0, perPage: 20, total: 0 })
+  const playerId = ref(route.params.id as string)
+
+  // --- DATA FETCHING ---
+
+  // Fetch main details on component mount
+  onMounted(async () => {
+    if (playerId.value) {
+      const data = await getUserDetails(playerId.value)
+      userDetail.value = data
+
+      // You can still use the store if you want, but local ref is fine too
+      userStore.setUserDetailInfo(data)
+
+      // Pre-load data for the default active tab
+      if (activeTab.value === '1') {
+        loadBetLogs()
+      }
+    }
+  })
+
+  // Load data when accordion tab changes
+  // const handleTabChange = (tabName: string | number) => {
+  //   if (tabName === '1' && betLogs.value.length === 0) {
+  //     loadBetLogs()
+  //   }
+  //   // else if (tabName === '4' && depositLogs.value.length === 0) {
+  //   //   loadDepositLogs()
+  //   // }
+  // }
+
+  // Specific function to load bet logs
+  const loadBetLogs = async () => {
+    if (!playerId.value) return
+    loadingStats.value = true
+    try {
+      const response = await getPlayerBetLogs(playerId.value, statsPagination.value)
+      betLogs.value = response.data
+      statsPagination.value.total = response.pagination.total
+    } catch (err) {
+      console.error('Failed to load bet logs:', err)
+    } finally {
+      loadingStats.value = false
+    }
   }
 </script>

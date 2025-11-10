@@ -36,61 +36,19 @@
 </template>
 
 <script setup lang="ts">
-  interface WeeklyItem {
-    icon: string
-    title: string
-    subtitle: string
-    value: string
-    iconBgClass: string
-    valueBgClass: string
-  }
+  // interface WeeklyItem {
+  //   icon: string
+  //   title: string
+  //   subtitle: string
+  //   value: string
+  //   iconBgClass: string
+  //   valueBgClass: string
+  // }
 
   /**
    * Weekly hot products list
    * Display top 3 product information by sales volume
    */
-  const weeklyList: WeeklyItem[] = [
-    {
-      icon: 'ri:money-cny-circle-line',
-      title: 'Game name',
-      subtitle: 'Electronics',
-      value: '1,286 units',
-      iconBgClass: 'bg-success/12 text-theme',
-      valueBgClass: 'bg-success/12 text-theme'
-    },
-    {
-      icon: 'ri:money-dollar-circle-line',
-      title: 'Game name',
-      subtitle: "Women's Clothing",
-      value: '892 units',
-      iconBgClass: 'bg-theme/12 text-success',
-      valueBgClass: 'bg-theme/12 text-success'
-    },
-    {
-      icon: 'ri:money-dollar-circle-line',
-      title: 'Game name',
-      subtitle: 'Home Appliances',
-      value: '756 units',
-      iconBgClass: 'bg-theme/12 text-error',
-      valueBgClass: 'bg-theme/12 text-error'
-    },
-    {
-      icon: 'ri:money-dollar-circle-line',
-      title: 'Game name',
-      subtitle: "Women's Clothing",
-      value: '892 units',
-      iconBgClass: 'bg-theme/12 text-success',
-      valueBgClass: 'bg-theme/12 text-success'
-    },
-    {
-      icon: 'ri:money-dollar-circle-line',
-      title: 'Game name',
-      subtitle: 'Home Appliances',
-      value: '756 units',
-      iconBgClass: 'bg-warning/12 text-error',
-      valueBgClass: 'bg-warning/12 text-error'
-    }
-  ]
 
   withDefaults(
     defineProps<{

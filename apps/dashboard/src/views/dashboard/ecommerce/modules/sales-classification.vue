@@ -7,12 +7,19 @@
       </div>
     </div>
 
-    <ArtRingChart :data="[
-      { value: 30, name: 'Slots' },
-      { value: 55, name: 'Fish' },
-      { value: 36, name: 'Other' }
-    ]" :color="['#4C87F3', '#EDF2FF', '#8BD8FC']" :radius="['70%', '80%']" height="16.5rem" :showLabel="false"
-      :borderRadius="0" centerText="¥300,458" />
+    <ArtRingChart
+      :data="[
+        { value: 30, name: 'Slots' },
+        { value: 55, name: 'Fish' },
+        { value: 36, name: 'Other' }
+      ]"
+      :color="['#4C87F3', '#EDF2FF', '#8BD8FC']"
+      :radius="['70%', '80%']"
+      height="16.5rem"
+      :showLabel="false"
+      :borderRadius="0"
+      centerText="¥300,458"
+    />
     <div class="flex justify-around">
       <div class="flex-c">
         <div class="flex-cc size-10.5 mr-2.5 text-theme bg-theme/10 rounded-lg">

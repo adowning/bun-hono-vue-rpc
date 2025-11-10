@@ -7,7 +7,7 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSettingStore } from '@/store/modules/setting'
 import { headerBarConfig } from '@/config/headerBar'
-import { HeaderBarFeatureConfig } from '@/types'
+import type { HeaderBarFeatureConfig } from '@/types'
 
 /**
  * Top bar feature management

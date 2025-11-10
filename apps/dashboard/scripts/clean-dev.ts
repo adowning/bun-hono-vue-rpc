@@ -76,8 +76,7 @@ const fmt = {
     `${bg}${theme.white}${theme.bold} ${text} ${theme.reset}`,
 
   // 渐变效果模拟
-  gradient: (text: string) =>
-  {
+  gradient: (text: string) => {
     const colors = ['\x1b[38;5;75m', '\x1b[38;5;81m', '\x1b[38;5;87m', '\x1b[38;5;159m']
     const chars = text.split('')
     return chars.map((char, i) => `${colors[i % colors.length]}${char}`).join('') + theme.reset
@@ -85,8 +84,7 @@ const fmt = {
 }
 
 // 创建现代化标题横幅
-function createModernBanner()
-{
+function createModernBanner() {
   console.log()
   console.log(
     fmt.gradient('  ╔══════════════════════════════════════════════════════════════════╗')
@@ -110,26 +108,22 @@ function createModernBanner()
 }
 
 // 创建分割线
-function createDivider(char = '─', color = theme.primary)
-{
+function createDivider(char = '─', color = theme.primary) {
   console.log(`${color}${'  ' + char.repeat(66)}${theme.reset}`)
 }
 
 // 创建卡片样式容器
-function createCard(title: string, content: string[])
-{
+function createCard(title: string, content: string[]) {
   console.log(`  ${fmt.badge('', theme.bgBlue)} ${fmt.title(title)}`)
   console.log()
-  content.forEach((line) =>
-  {
+  content.forEach((line) => {
     console.log(`     ${line}`)
   })
   console.log()
 }
 
 // 进度条动画
-function createProgressBar(current: number, total: number, text: string, width = 40)
-{
+function createProgressBar(current: number, total: number, text: string, width = 40) {
   const percentage = Math.round((current / total) * 100)
   const filled = Math.round((current / total) * width)
   const empty = width - filled
@@ -180,8 +174,7 @@ const targets = [
 ]
 
 // 递归统计文件数量
-async function countFiles(targetPath: string): Promise<number>
-{
+async function countFiles(targetPath: string): Promise<number> {
   const fullPath = path.resolve(process.cwd(), targetPath)
 
   try {
@@ -208,8 +201,7 @@ async function countFiles(targetPath: string): Promise<number>
 }
 
 // 统计所有目标的文件数量
-async function countAllFiles(): Promise<number>
-{
+async function countAllFiles(): Promise<number> {
   let totalCount = 0
 
   for (const target of targets) {
@@ -221,8 +213,7 @@ async function countAllFiles(): Promise<number>
 }
 
 // 删除文件和目录
-async function remove(targetPath: string, index: number)
-{
+async function remove(targetPath: string, index: number) {
   const fullPath = path.resolve(process.cwd(), targetPath)
 
   createProgressBar(index + 1, targets.length, targetPath)
@@ -242,8 +233,7 @@ async function remove(targetPath: string, index: number)
 }
 
 // 清理路由模块
-async function cleanRouteModules()
-{
+async function cleanRouteModules() {
   const modulesPath = path.resolve(process.cwd(), 'src/router/modules')
 
   try {
@@ -385,8 +375,7 @@ export const routeModules: AppRouteRecord[] = [
 }
 
 // 清理路由别名
-async function cleanRoutesAlias()
-{
+async function cleanRoutesAlias() {
   const routesAliasPath = path.resolve(process.cwd(), 'src/router/routesAlias.ts')
 
   try {
@@ -409,8 +398,7 @@ export enum RoutesAlias {
 }
 
 // 清理变更日志
-async function cleanChangeLog()
-{
+async function cleanChangeLog() {
   const changeLogPath = path.resolve(process.cwd(), 'src/mock/upgrade/changeLog.ts')
 
   try {
@@ -437,8 +425,7 @@ export const upgradeLogList = ref<UpgradeLog[]>([])
 }
 
 // 清理语言文件
-async function cleanLanguageFiles()
-{
+async function cleanLanguageFiles() {
   const languageFiles = [
     { path: 'src/locales/langs/zh.json', name: '中文语言文件' },
     { path: 'src/locales/langs/en.json', name: '英文语言文件' }
@@ -461,8 +448,7 @@ async function cleanLanguageFiles()
       ]
 
       if (langData.menus) {
-        menusToRemove.forEach((menuKey) =>
-        {
+        menusToRemove.forEach((menuKey) => {
           if (langData.menus[menuKey]) {
             delete langData.menus[menuKey]
           }
@@ -488,8 +474,7 @@ async function cleanLanguageFiles()
             'menu32',
             'menu321'
           ]
-          systemKeysToRemove.forEach((key) =>
-          {
+          systemKeysToRemove.forEach((key) => {
             if (langData.menus.system[key]) {
               delete langData.menus.system[key]
             }
@@ -507,8 +492,7 @@ async function cleanLanguageFiles()
 }
 
 // 清理快速入口组件
-async function cleanFastEnterComponent()
-{
+async function cleanFastEnterComponent() {
   const fastEnterPath = path.resolve(process.cwd(), 'src/config/fastEnter.ts')
 
   try {
@@ -602,8 +586,7 @@ export default Object.freeze(fastEnterConfig)
 }
 
 // 更新菜单接口
-async function updateMenuApi()
-{
+async function updateMenuApi() {
   const apiPath = path.resolve(process.cwd(), 'src/api/system-manage.ts')
 
   try {
@@ -622,12 +605,10 @@ async function updateMenuApi()
 }
 
 // 用户确认函数
-async function getUserConfirmation(): Promise<boolean>
-{
+async function getUserConfirmation(): Promise<boolean> {
   const { createInterface } = await import('readline')
 
-  return new Promise((resolve) =>
-  {
+  return new Promise((resolve) => {
     const rl = createInterface({
       input: process.stdin,
       output: process.stdout
@@ -639,8 +620,7 @@ async function getUserConfirmation(): Promise<boolean>
     console.log()
     process.stdout.write(`  ${icons.arrow} `)
 
-    rl.question('', (answer: string) =>
-    {
+    rl.question('', (answer: string) => {
       rl.close()
       resolve(answer.toLowerCase().trim() === 'yes')
     })
@@ -648,8 +628,7 @@ async function getUserConfirmation(): Promise<boolean>
 }
 
 // 显示清理警告
-async function showCleanupWarning()
-{
+async function showCleanupWarning() {
   createCard('安全警告', [
     `${fmt.warning('此操作将永久删除以下演示内容，且无法恢复！')}`,
     `${fmt.dim('请仔细阅读清理列表，确认后再继续操作')}`
@@ -705,8 +684,7 @@ async function showCleanupWarning()
   console.log(`  ${fmt.badge('', theme.bgRed)} ${fmt.title('将要清理的内容')}`)
   console.log()
 
-  cleanupItems.forEach((item, index) =>
-  {
+  cleanupItems.forEach((item, index) => {
     console.log(`     ${item.color}${theme.reset} ${fmt.highlight(`${index + 1}. ${item.name}`)}`)
     console.log(`        ${fmt.dim(item.desc)}`)
   })
@@ -724,8 +702,7 @@ async function showCleanupWarning()
     { name: 'Core Components', desc: '核心组件库' }
   ]
 
-  preservedModules.forEach((module) =>
-  {
+  preservedModules.forEach((module) => {
     console.log(`     ${icons.check} ${fmt.success(module.name)} ${fmt.dim(`- ${module.desc}`)}`)
   })
 
@@ -735,8 +712,7 @@ async function showCleanupWarning()
 }
 
 // 显示统计信息
-async function showStats()
-{
+async function showStats() {
   const duration = Date.now() - stats.startTime
   const seconds = (duration / 1000).toFixed(2)
 
@@ -746,16 +722,15 @@ async function showStats()
     `${fmt.info('涉及路径')}: ${fmt.highlight(stats.deletedPaths.toString())} 个目录/文件`,
     ...(stats.failedPaths > 0
       ? [
-        `${icons.error} ${fmt.error('删除失败')}: ${fmt.highlight(stats.failedPaths.toString())} 个路径`
-      ]
+          `${icons.error} ${fmt.error('删除失败')}: ${fmt.highlight(stats.failedPaths.toString())} 个路径`
+        ]
       : []),
     `${fmt.info('耗时')}: ${fmt.highlight(seconds)} 秒`
   ])
 }
 
 // 创建成功横幅
-function createSuccessBanner()
-{
+function createSuccessBanner() {
   console.log()
   console.log(
     fmt.gradient('  ╔══════════════════════════════════════════════════════════════════╗')
@@ -779,8 +754,7 @@ function createSuccessBanner()
 }
 
 // 主函数
-async function main()
-{
+async function main() {
   // 清屏并显示横幅
   console.clear()
   createModernBanner()
@@ -853,8 +827,7 @@ async function main()
   createSuccessBanner()
 }
 
-main().catch((err) =>
-{
+main().catch((err) => {
   console.log()
   console.log(`  ${icons.error} ${fmt.error('清理脚本执行出错')}`)
   console.log(`  ${fmt.dim('错误详情: ' + err)}`)

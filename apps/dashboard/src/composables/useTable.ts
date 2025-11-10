@@ -3,8 +3,7 @@ import { useWindowSize } from '@vueuse/core'
 import { computed, nextTick, onMounted, onUnmounted, reactive, readonly, ref } from 'vue'
 import { CacheInvalidationStrategy, TableCache, type ApiResponse } from '../utils/table/tableCache'
 import { tableConfig } from '../utils/table/tableConfig'
-import
-{
+import {
   createErrorHandler,
   createSmartDebounce,
   defaultResponseAdapter,
@@ -25,8 +24,7 @@ export interface UseTableConfig<
   TRecord = InferRecordType<InferApiResponse<TApiFn>>,
   TParams = InferApiParams<TApiFn>,
   TResponse = InferApiResponse<TApiFn>
->
-{
+> {
   // Core configuration
   core: {
     /** API request function */
@@ -93,8 +91,7 @@ export interface UseTableConfig<
 
 export function useTable<TApiFn extends (params: any) => Promise<any>>(
   config: UseTableConfig<TApiFn>
-)
-{
+) {
   return useTableImpl(config)
 }
 
@@ -111,8 +108,7 @@ export function useTable<TApiFn extends (params: any) => Promise<any>>(
  */
 function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   config: UseTableConfig<TApiFn>
-)
-{
+) {
   type TRecord = InferRecordType<InferApiResponse<TApiFn>>
   type TParams = InferApiParams<TApiFn>
   const {
@@ -144,20 +140,17 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
 
   // Logger utility functions
   const logger = {
-    log: (message: string, ...args: unknown[]) =>
-    {
+    log: (message: string, ...args: unknown[]) => {
       if (enableLog) {
         console.log(`[useTable] ${message}`, ...args)
       }
     },
-    warn: (message: string, ...args: unknown[]) =>
-    {
+    warn: (message: string, ...args: unknown[]) => {
       if (enableLog) {
         console.warn(`[useTable] ${message}`, ...args)
       }
     },
-    error: (message: string, ...args: unknown[]) =>
-    {
+    error: (message: string, ...args: unknown[]) => {
       if (enableLog) {
         console.error(`[useTable] ${message}`, ...args)
       }
@@ -216,8 +209,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   const hasData = computed(() => data.value.length > 0)
 
   // Cache statistics
-  const cacheInfo = computed(() =>
-  {
+  const cacheInfo = computed(() => {
     // Dependency trigger to ensure recalculation when cache changes
     void cacheUpdateTrigger.value
     if (!cache) return { total: 0, size: '0KB', hitRate: '0 avg hits' }
@@ -228,8 +220,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   const handleError = createErrorHandler(onError, enableLog)
 
   // Clear cache, selectively clear cache according to different business scenarios
-  const clearCache = (strategy: CacheInvalidationStrategy, context?: string): void =>
-  {
+  const clearCache = (strategy: CacheInvalidationStrategy, context?: string): void => {
     if (!cache) return
 
     let clearedCount = 0
@@ -263,8 +254,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   const fetchData = async (
     params?: Partial<TParams>,
     useCache = enableCache
-  ): Promise<ApiResponse<TRecord>> =>
-  {
+  ): Promise<ApiResponse<TRecord>> => {
     // Cancel the previous request
     if (abortController) {
       abortController.abort()
@@ -291,8 +281,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
       // Exclude unnecessary parameters
       if (excludeParams.length > 0) {
         const filteredParams = { ...requestParams }
-        excludeParams.forEach((key) =>
-        {
+        excludeParams.forEach((key) => {
           delete (filteredParams as Record<string, unknown>)[key]
         })
         requestParams = filteredParams as TParams
@@ -390,8 +379,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   }
 
   // Get data (maintain current page)
-  const getData = async (params?: Partial<TParams>): Promise<ApiResponse<TRecord> | void> =>
-  {
+  const getData = async (params?: Partial<TParams>): Promise<ApiResponse<TRecord> | void> => {
     try {
       return await fetchData(params)
     } catch {
@@ -401,10 +389,9 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   }
 
   // Get data by page (reset to first page) - specifically used for search scenarios
-  const getDataByPage = async (params?: Partial<TParams>): Promise<ApiResponse<TRecord> | void> =>
-  {
+  const getDataByPage = async (params?: Partial<TParams>): Promise<ApiResponse<TRecord> | void> => {
     pagination.current = 1
-      ; (searchParams as Record<string, unknown>)[pageKey] = 1
+    ;(searchParams as Record<string, unknown>)[pageKey] = 1
 
     // Clear current search condition cache when searching, ensure getting latest data
     clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, 'Search data')
@@ -421,8 +408,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   const debouncedGetDataByPage = createSmartDebounce(getDataByPage, debounceTime)
 
   // Reset search parameters
-  const resetSearchParams = async (): Promise<void> =>
-  {
+  const resetSearchParams = async (): Promise<void> => {
     // Cancel debounced search
     debouncedGetDataByPage.cancel()
 
@@ -434,8 +420,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     }
 
     // Clear all search parameters
-    Object.keys(searchParams).forEach((key) =>
-    {
+    Object.keys(searchParams).forEach((key) => {
       delete paramsRecord[key]
     })
 
@@ -466,8 +451,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   let isCurrentChanging = false
 
   // Handle page size change
-  const handleSizeChange = async (newSize: number): Promise<void> =>
-  {
+  const handleSizeChange = async (newSize: number): Promise<void> => {
     if (newSize <= 0) return
 
     debouncedGetDataByPage.cancel()
@@ -484,8 +468,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   }
 
   // Handle current page change
-  const handleCurrentChange = async (newCurrent: number): Promise<void> =>
-  {
+  const handleCurrentChange = async (newCurrent: number): Promise<void> => {
     if (newCurrent <= 0) return
 
     // Fix: prevent duplicate calls
@@ -519,25 +502,22 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   // Refresh methods for different business scenarios
 
   // Refresh after create: go to first page and clear pagination cache (suitable after adding data)
-  const refreshCreate = async (): Promise<void> =>
-  {
+  const refreshCreate = async (): Promise<void> => {
     debouncedGetDataByPage.cancel()
     pagination.current = 1
-      ; (searchParams as Record<string, unknown>)[pageKey] = 1
+    ;(searchParams as Record<string, unknown>)[pageKey] = 1
     clearCache(CacheInvalidationStrategy.CLEAR_PAGINATION, 'Add data')
     await getData()
   }
 
   // Refresh after update: maintain current page, only clear current search cache (suitable after updating data)
-  const refreshUpdate = async (): Promise<void> =>
-  {
+  const refreshUpdate = async (): Promise<void> => {
     clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, 'Edit data')
     await getData()
   }
 
   // Refresh after delete: intelligently handle page numbers, avoid empty pages (suitable after deleting data)
-  const refreshRemove = async (): Promise<void> =>
-  {
+  const refreshRemove = async (): Promise<void> => {
     const { current } = pagination
 
     // Clear cache and get latest data
@@ -547,29 +527,26 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     // If current page is empty and not first page, go to previous page
     if (data.value.length === 0 && current > 1) {
       pagination.current = current - 1
-        ; (searchParams as Record<string, unknown>)[pageKey] = current - 1
+      ;(searchParams as Record<string, unknown>)[pageKey] = current - 1
       await getData()
     }
   }
 
   // Full refresh: clear all cache, re-fetch data (suitable for manual refresh button)
-  const refreshData = async (): Promise<void> =>
-  {
+  const refreshData = async (): Promise<void> => {
     debouncedGetDataByPage.cancel()
     clearCache(CacheInvalidationStrategy.CLEAR_ALL, 'Manual refresh')
     await getData()
   }
 
   // Light refresh: only clear current search condition cache, maintain pagination state (suitable for timed refresh)
-  const refreshSoft = async (): Promise<void> =>
-  {
+  const refreshSoft = async (): Promise<void> => {
     clearCache(CacheInvalidationStrategy.CLEAR_CURRENT, 'Soft refresh')
     await getData()
   }
 
   // Cancel current request
-  const cancelRequest = (): void =>
-  {
+  const cancelRequest = (): void => {
     if (abortController) {
       abortController.abort()
     }
@@ -577,16 +554,14 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
   }
 
   // Clear data
-  const clearData = (): void =>
-  {
+  const clearData = (): void => {
     data.value = []
     error.value = null
     clearCache(CacheInvalidationStrategy.CLEAR_ALL, 'Clear data')
   }
 
   // Clean up expired cache entries, release memory space
-  const clearExpiredCache = (): number =>
-  {
+  const clearExpiredCache = (): number => {
     if (!cache) return 0
     const cleanedCount = cache.cleanupExpired()
     if (cleanedCount > 0) {
@@ -598,8 +573,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
 
   // Set up periodic cleanup of expired cache
   if (enableCache && cache) {
-    cacheCleanupTimer = setInterval(() =>
-    {
+    cacheCleanupTimer = setInterval(() => {
       const cleanedCount = cache.cleanupExpired()
       if (cleanedCount > 0) {
         logger.log(`Auto cleanup ${cleanedCount} expired cache items`)
@@ -611,15 +585,13 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
 
   // Auto load data on mount
   if (immediate) {
-    onMounted(async () =>
-    {
+    onMounted(async () => {
       await getData()
     })
   }
 
   // Thorough cleanup on component unmount
-  onUnmounted(() =>
-  {
+  onUnmounted(() => {
     cancelRequest()
     if (cache) {
       cache.clear()
@@ -730,4 +702,3 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
 export { CacheInvalidationStrategy } from '../utils/table/tableCache'
 export type { ApiResponse, CacheItem } from '../utils/table/tableCache'
 export type { BaseRequestParams, TableError } from '../utils/table/tableUtils'
-

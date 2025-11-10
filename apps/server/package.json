@@ -3,14 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "main": "src/server.ts",
-  "exports": [
-    {
-      "shared": "./src/shared"
-    }
-  ],
+  "exports": {
+    "./shared": "./src/shared.ts"
+  },
   "scripts": {
     "dev": "bun --watch run src/server.ts",
-    "db:seed": "bun run src/db/seed.ts"
+    "db:seed": "bun run src/db/seed.ts",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "lint:check": "eslint --format=json"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.80.0",
@@ -19,7 +20,17 @@
     "zod": "latest"
   },
   "devDependencies": {
+    "@eslint/js": "^9.9.1",
+    "@typescript-eslint/eslint-plugin": "^8.3.0",
+    "@typescript-eslint/parser": "^8.3.0",
     "bun-types": "latest",
-    "drizzle-kit": "^0.31.6"
+    "drizzle-kit": "^0.31.6",
+    "eslint": "^9.9.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "globals": "^15.9.0",
+    "prettier": "^3.5.3",
+    "typescript": "~5.6.3",
+    "typescript-eslint": "^8.9.0"
   }
 }

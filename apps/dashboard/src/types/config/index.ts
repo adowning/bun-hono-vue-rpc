@@ -3,7 +3,7 @@
  */
 
 import { MenuTypeEnum, SystemThemeEnum } from '@/enums/appEnum'
-import { MenuThemeType, SystemThemeTypes } from '@/types/store'
+import type { SystemThemeTypes, MenuThemeType } from '../store'
 
 // 主题设置
 export interface ThemeSetting {

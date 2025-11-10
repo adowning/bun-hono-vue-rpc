@@ -12,9 +12,13 @@ import type {
   // PaginationParams,
   CurrentUser,
   Game,
-  TGetAllUsersType
-} from '../../../server/src/shared'
-export { constants } from '../../../server/src/shared'
+  TGetAllUsersType,
+  PaginatedResponse, // Assuming a generic paginated type
+  BetLog, // You'll need to export BetLog from shared.ts
+  PaginationParams
+} from 'server/shared'
+
+export { constants } from 'server/shared'
 type GetMeDataType = Awaited<ReturnType<typeof getMe>> // This gives us Api.Auth.UserInfo
 type GetAllUsersDataType = Awaited<ReturnType<typeof getAllUsersWithBalance>> // This gives us
 // Api.Auth.UserInfo
@@ -40,22 +44,44 @@ export type { GetMeDataType }
 
 export const client = hc<AppType>('http://localhost:3006/api')
 
-export const getUserDetails = async (id: string): Promise<CurrentUser> => {
+export const getUserDetails = async (id: string): Promise<any> => {
+  // Using 'any' for now, but you should use a Zod schema or type
   const authHeaders = getSupabaseAuthHeaders()
-  const res = await client.api.users.single[id].$get(
-    { id },
+  const res = await client.api.users.single[':id'].$get(
+    { param: { id } }, // <-- Pass 'id' as a 'param' object
     {
       headers: authHeaders
     }
   )
 
   if (!res.ok) {
-    // throw new Error('Failed to fetch user') // Changed from 'course'
     return null
   }
 
   const data = await res.json()
   return data
+}
+export const getPlayerBetLogs = async (id: string, params: PaginationParams) => {
+  const authHeaders = getSupabaseAuthHeaders()
+  const res = await client.api.users[':id']['bet-logs'].$get(
+    {
+      param: { id },
+      query: {
+        page: String(params.page),
+        perPage: String(params.perPage)
+      }
+    },
+    {
+      headers: authHeaders
+    }
+  )
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch bet logs')
+  }
+
+  // This type should match the response from your new endpoint
+  return (await res.json()) as PaginatedResponse<BetLog>
 }
 export const getMe = async (): Promise<CurrentUser> => {
   const authHeaders = getSupabaseAuthHeaders()

@@ -1,5 +1,3 @@
-import Layout from '@/components/core/layouts/art-page-content/index.vue'
-
 export const playerRoutes = {
   name: 'Player',
   component: '/index/index',

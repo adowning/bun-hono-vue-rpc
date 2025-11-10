@@ -54,29 +54,29 @@
     const matchedLength = matched.length
 
     // Handle home page situation
-    if (!matchedLength || isHomeRoute(matched[0])) {
+    if (!matchedLength || isHomeRoute(matched[0]!)) {
       return []
     }
 
     // Handle first-level menu and normal routes
     const firstRoute = matched[0]
-    const isFirstLevel = firstRoute.meta?.isFirstLevel
+    const isFirstLevel = firstRoute!.meta?.isFirstLevel
     const lastIndex = matchedLength - 1
     const currentRoute = matched[lastIndex]
-    const currentRouteMeta = currentRoute.meta
+    const currentRouteMeta = currentRoute!.meta
 
     let items = isFirstLevel
-      ? [createBreadcrumbItem(currentRoute)]
+      ? [createBreadcrumbItem(currentRoute!)]
       : matched.map(createBreadcrumbItem)
 
     // Filter wrapper container: if there are multiple items and the first is a container route (like /outside), remove it
-    if (items.length > 1 && isWrapperContainer(items[0])) {
+    if (items.length > 1 && isWrapperContainer(items[0]!)) {
       items = items.slice(1)
     }
 
     // Special handling for IFrame pages: if after filtering only one iframe page remains, or all items are wrapper containers, only show current page
     if (currentRouteMeta?.isIframe && (items.length === 1 || items.every(isWrapperContainer))) {
-      return [createBreadcrumbItem(currentRoute)]
+      return [createBreadcrumbItem(currentRoute!)]
     }
 
     return items

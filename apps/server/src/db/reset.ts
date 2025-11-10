@@ -28,11 +28,13 @@ const main = async () => {
     console.log('Deleting active bonuses...')
     await db.delete(schema.activeBonusTable)
 
-    // bonusLogTable and depositLogTable can have a circular-like dependency
-    // (bonus references deposit, but we need to delete both)
-    // We can break the link by setting the foreign key to null first (if it's nullable)
-    // or just delete the logs that depend on deposits.
-    // In our schema, bonusLog references depositLog, so we delete bonusLog first.
+    /*
+     * bonusLogTable and depositLogTable can have a circular-like dependency
+     * (bonus references deposit, but we need to delete both)
+     * We can break the link by setting the foreign key to null first (if it's nullable)
+     * or just delete the logs that depend on deposits.
+     * In our schema, bonusLog references depositLog, so we delete bonusLog first.
+     */
     console.log('Deleting bonus logs...')
     await db.delete(schema.bonusLogTable)
 

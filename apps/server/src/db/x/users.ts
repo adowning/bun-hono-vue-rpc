@@ -7,54 +7,53 @@ import {
   pgTable,
   text,
   timestamp,
-  uuid,
-} from "drizzle-orm/pg-core";
-import {
-  createInsertSchema,
-  createSelectSchema,
-} from "drizzle-zod";
-import z from "zod";
+  uuid
+} from 'drizzle-orm/pg-core'
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
+import z from 'zod'
 
+export const userRoleEnum = pgEnum('user_role_enum', [
+  'USER',
+  'AFFILIATE',
+  'ADMIN',
+  'OPERATOR',
+  'BOT'
+])
+export const userStatusEnum = pgEnum('user_status_enum', ['ONLINE', 'OFFLINE', 'BANNED', 'PENDING'])
 
-export const userRoleEnum = pgEnum("user_role_enum", ['USER', 'AFFILIATE', 'ADMIN', 'OPERATOR', 'BOT'])
-export const userStatusEnum = pgEnum("user_status_enum", ['ONLINE', 'OFFLINE', 'BANNED', 'PENDING'])
-
-
-export const userTable = pgTable("user", {
+export const userTable = pgTable('user', {
   id: uuid().defaultRandom().primaryKey().notNull(),
   username: text().notNull(),
   avatarUrl: text()
     .notNull()
     .default(
-      "https://crqbazcsrncvbnapuxcp.supabase.co/storage/v1/object/public/avatars/avatar-6.webp"
+      'https://crqbazcsrncvbnapuxcp.supabase.co/storage/v1/object/public/avatars/avatar-6.webp'
     ),
-  role: userRoleEnum("role").default("USER"),
-  status: userStatusEnum("status").default("OFFLINE"),
+  role: userRoleEnum('role').default('USER'),
+  status: userStatusEnum('status').default('OFFLINE'),
   vipPoints: integer().default(0).notNull(),
   banned: boolean(),
   authEmail: text().notNull().unique(),
   banReason: text(),
-  banExpires: timestamp({ withTimezone: true, mode: "date" }).defaultNow(),
+  banExpires: timestamp({ withTimezone: true, mode: 'date' }).defaultNow(),
   phone: text(),
   invitorId: uuid(),
   operatorId: uuid(),
   botApiKeyHash: text(),
-  botPermissions: jsonb().default("[]"),
-  botServiceScope: jsonb().default("[]"),
-  createdAt: timestamp({ withTimezone: true, mode: "date" })
+  botPermissions: jsonb().default('[]'),
+  botServiceScope: jsonb().default('[]'),
+  createdAt: timestamp({ withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp({ withTimezone: true, mode: 'date' })
     .defaultNow()
-    .notNull(),
-  updatedAt: timestamp({ withTimezone: true, mode: "date" })
-    .defaultNow()
-    .$onUpdate(() => new Date()),
-});
+    .$onUpdate(() => new Date())
+})
 
-export const UserSelectSchema = createSelectSchema(userTable);
-export const UserInsertSchema = createInsertSchema(userTable);
-export type User = typeof userTable.$inferSelect;
-export type UserInsert = typeof userTable.$inferInsert;
+export const UserSelectSchema = createSelectSchema(userTable)
+export const UserInsertSchema = createInsertSchema(userTable)
+export type User = typeof userTable.$inferSelect
+export type UserInsert = typeof userTable.$inferInsert
 
-export const userBalanceTable = pgTable("user_balances", {
+export const userBalanceTable = pgTable('user_balances', {
   id: uuid().primaryKey().notNull(),
   // .
   userId: uuid().notNull(),
@@ -70,18 +69,16 @@ export const userBalanceTable = pgTable("user_balances", {
   totalWon: integer().default(0).notNull(),
   totalBonusGranted: integer().default(0).notNull(),
   totalFreeSpinWins: integer().default(0).notNull(),
-  createdAt: timestamp({ withTimezone: true, mode: "date" })
+  createdAt: timestamp({ withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp({ withTimezone: true, mode: 'date' })
     .defaultNow()
-    .notNull(),
-  updatedAt: timestamp({ withTimezone: true, mode: "date" })
-    .defaultNow()
-    .$onUpdate(() => new Date()),
-});
+    .$onUpdate(() => new Date())
+})
 
-export const UserBalanceSelectSchema = createSelectSchema(userBalanceTable);
-export const UserBalanceInsertSchema = createInsertSchema(userBalanceTable);
-export type UserBalance = typeof userBalanceTable.$inferSelect;
-export type UserBalanceInsert = typeof userBalanceTable.$inferInsert;
-export type UserBalanceSelect = typeof userBalanceTable.$inferSelect;
+export const UserBalanceSelectSchema = createSelectSchema(userBalanceTable)
+export const UserBalanceInsertSchema = createInsertSchema(userBalanceTable)
+export type UserBalance = typeof userBalanceTable.$inferSelect
+export type UserBalanceInsert = typeof userBalanceTable.$inferInsert
+export type UserBalanceSelect = typeof userBalanceTable.$inferSelect
 
-export type UserWithBalance = User & { userBalance: UserBalance };
+export type UserWithBalance = User & { userBalance: UserBalance }

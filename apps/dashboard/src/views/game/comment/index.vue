@@ -2,7 +2,9 @@
 <template>
   <div>
     <h1 class="text-4xl font-medium mt-5">Message Wall</h1>
-    <p class="mt-3.5 text-g-600">Each message records your thoughts and provides precious memories for us</p>
+    <p class="mt-3.5 text-g-600"
+      >Each message records your thoughts and provides precious memories for us</p
+    >
 
     <ul
       class="mt-10 grid grid-cols-5 gap-5 max-2xl:grid-cols-4 max-xl:grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1 mb-5"
