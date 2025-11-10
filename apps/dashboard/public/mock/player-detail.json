@@ -1,0 +1,66 @@
+{
+  "user": {
+    "id": "u_001",
+    "displayName": "CasinoKing",
+    "email": "king@example.com",
+    "roles": ["USER", "VIP_TIER_2"],
+    "createdAt": "2025-11-01T10:30:00Z",
+    "status": "ACTIVE"
+  },
+  "balance": {
+    "realBalance": 1500.75,
+    "freeSpinsRemaining": 10,
+    "depositWageringRemaining": 250.00,
+    "totalDepositedReal": 5800.00,
+    "totalWithdrawn": 2000.00,
+    "totalWagered": 10500.00,
+    "totalWon": 9250.00,
+    "totalBonusGranted": 1500.00
+  },
+  "activeBonuses": [
+    {
+      "id": "ab_001",
+      "status": "ACTIVE",
+      "priority": 100,
+      "currentBonusBalance": 50.00,
+      "currentWageringRemaining": 1000.00,
+      "expiresAt": "2025-11-15T10:00:00Z"
+    }
+  ],
+  "recentGameSessions": [
+    {
+      "id": "gs_001",
+      "gameName": "BassBossRTG",
+      "status": "COMPLETED",
+      "totalWagered": 150.00,
+      "totalWon": 300.00,
+      "duration": 15,
+      "createdAt": "2025-11-10T05:30:00Z"
+    },
+    {
+      "id": "gs_002",
+      "gameName": "SpaceCatKA",
+      "status": "COMPLETED",
+      "totalWagered": 75.00,
+      "totalWon": 10.50,
+      "duration": 8,
+      "createdAt": "2025-11-10T05:15:00Z"
+    }
+  ],
+  "recentTransactions": [
+    {
+      "id": "rt_001",
+      "type": "DEPOSIT",
+      "amount": 250.00,
+      "status": "COMPLETED",
+      "createdAt": "2025-11-10T05:10:00Z"
+    },
+    {
+      "id": "rt_002",
+      "type": "WITHDRAWAL",
+      "amount": 1000.00,
+      "status": "PENDING",
+      "createdAt": "2025-11-09T14:00:00Z"
+    }
+  ]
+}

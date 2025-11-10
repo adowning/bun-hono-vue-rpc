@@ -1,0 +1,47 @@
+[
+  {
+    "id": "u_001",
+    "displayName": "CasinoKing",
+    "email": "king@example.com",
+    "totalGGR": 1250.00,
+    "totalDeposits": 5800.00,
+    "status": "ACTIVE",
+    "joinDate": "2025-11-01T10:30:00Z"
+  },
+  {
+    "id": "u_002",
+    "displayName": "SpinQueen",
+    "email": "queen@example.com",
+    "totalGGR": 850.50,
+    "totalDeposits": 3200.00,
+    "status": "ACTIVE",
+    "joinDate": "2025-10-28T14:15:00Z"
+  },
+  {
+    "id": "u_003",
+    "displayName": "JackpotJoe",
+    "email": "joe@example.com",
+    "totalGGR": -200.00,
+    "totalDeposits": 500.00,
+    "status": "ACTIVE",
+    "joinDate": "2025-10-25T08:00:00Z"
+  },
+  {
+    "id": "u_004",
+    "displayName": "LapsedPlayer",
+    "email": "lapsed@example.com",
+    "totalGGR": 15.00,
+    "totalDeposits": 50.00,
+    "status": "INACTIVE",
+    "joinDate": "2025-09-15T12:00:00Z"
+  },
+  {
+    "id": "u_005",
+    "displayName": "HighRoller",
+    "email": "roller@example.com",
+    "totalGGR": 5400.00,
+    "totalDeposits": 25000.00,
+    "status": "ACTIVE",
+    "joinDate": "2025-11-05T17:45:00Z"
+  }
+]

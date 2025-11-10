@@ -1,0 +1,225 @@
+{
+  "statsCards": [
+    {
+      "title": "Total GGR",
+      "value": "12,450.00",
+      "unit": "$",
+      "comparison": "+15.5%",
+      "period": "vs. last 7 days",
+      "icon": "Coin"
+    },
+    {
+      "title": "Active Players",
+      "value": "84",
+      "unit": "",
+      "comparison": "+5.2%",
+      "period": "vs. last 7 days",
+      "icon": "User"
+    },
+    {
+      "title": "New Users",
+      "value": "18",
+      "unit": "",
+      "comparison": "-2.1%",
+      "period": "vs. last 7 days",
+      "icon": "UserPlus"
+    },
+    {
+      "title": "Total Deposits",
+      "value": "28,300.00",
+      "unit": "$",
+      "comparison": "+8.0%",
+      "period": "vs. last 7 days",
+      "icon": "ArrowUpCircle"
+    }
+  ],
+  "recentActivities": [
+    {
+      "id": "ra_1",
+      "user": "john_doe",
+      "activity": "DEPOSIT",
+      "description": "deposited $50.00",
+      "timestamp": "2025-11-09T10:30:00Z",
+      "status": "COMPLETED"
+    },
+    {
+      "id": "ra_2",
+      "user": "jane_gamer",
+      "activity": "BET",
+      "description": "won $12.50 on BassBossRTG",
+      "timestamp": "2025-11-09T10:28:00Z",
+      "status": "COMPLETED"
+    },
+    {
+      "id": "ra_3",
+      "user": "big_winner",
+      "activity": "WITHDRAWAL",
+      "description": "requested $200.00",
+      "timestamp": "2025-11-09T10:25:00Z",
+      "status": "PENDING"
+    },
+    {
+      "id": "ra_4",
+      "user": "new_player_1",
+      "activity": "NEW_USER",
+      "description": "joined the platform",
+      "timestamp": "2025-11-09T10:22:00Z",
+      "status": "COMPLETED"
+    },
+    {
+      "id": "ra_5",
+      "user": "jane_gamer",
+      "activity": "BET",
+      "description": "bet $2.00 on SpaceCatKA",
+      "timestamp": "2025-11-09T10:21:00Z",
+      "status": "COMPLETED"
+    }
+  ],
+  "topGamesByGGR": {
+    "title": "Top Games by GGR",
+    "data": [
+      { "name": "BassBossRTG", "ggr": 4520 },
+      { "name": "SpaceCatKA", "ggr": 3102 },
+      { "name": "AncientDiscoRTG", "ggr": 2800 },
+      { "name": "JumanjiNET", "ggr": 1500 },
+      { "name": "NarcosNET", "ggr": 950 }
+    ]
+  },
+  "bonusBreakdown": {
+    "title": "Bonus Classification",
+    "data": [
+      { "value": 12500, "name": "DEPOSIT_MATCH" },
+      { "value": 3200, "name": "VIP_LEVEL_UP" },
+      { "value": 1800, "name": "LONG_BONUS_DAY_1" }
+    ]
+  },
+  "recentTransactions": [
+    {
+      "id": "rt_1",
+      "user": "player_one",
+      "type": "DEPOSIT",
+      "amount": 100.0,
+      "status": "COMPLETED",
+      "timestamp": "2025-11-09T09:15:00Z"
+    },
+    {
+      "id": "rt_2",
+      "user": "lucky_lucy",
+      "type": "WITHDRAWAL",
+      "amount": 500.0,
+      "status": "COMPLETED",
+      "timestamp": "2025-11-09T08:45:00Z"
+    },
+    {
+      "id": "rt_3",
+      "user": "spin_king",
+      "type": "DEPOSIT",
+      "amount": 25.0,
+      "status": "COMPLETED",
+      "timestamp": "2025-11-09T08:30:00Z"
+    },
+    {
+      "id": "rt_4",
+      "user": "player_one",
+      "type": "WITHDRAWAL",
+      "amount": 75.0,
+      "status": "PENDING",
+      "timestamp": "2025-11-09T08:22:00Z"
+    }
+  ],
+  "latestUsers": {
+    "title": "New Users",
+    "data": [
+      {
+        "username": "chippy.chirp",
+        "img": "avatar-03.avif",
+        "deposit": 0,
+        "bonus": 0,
+        "bets": 77,
+        "balance": 33,
+        "time": "2025-11-09T08:21:00Z"
+      },
+      {
+        "username": "fairyGirl",
+        "img": "avatar-03.avif",
+        "deposit": 10,
+        "bonus": 10,
+        "bets": 77,
+        "balance": 33,
+        "time": "2025-11-09T08:22:00Z"
+      },
+      {
+        "username": "blueMan",
+        "img": "avatar-03.avif",
+        "deposit": 0,
+        "bonus": 0,
+        "bets": 77,
+        "balance": 33,
+        "time": "2025-11-09T08:23:00Z"
+      },
+      {
+        "username": "seXy1991",
+        "img": "avatar-03.avif",
+        "deposit": 0,
+        "bonus": 0,
+        "bets": 77,
+        "balance": 33,
+        "time": "2025-11-09T08:25:00Z"
+      },
+      {
+        "username": "farbetweeenx",
+        "img": "avatar-03.avif",
+        "deposit": 20,
+        "bonus": 10,
+        "bets": 77,
+        "balance": 33,
+        "time": "2025-11-09T08:26:00Z"
+      }
+    ]
+  },
+  "hotProductsList": {
+    "title": "Hot Games",
+    "data": [
+      {
+        "name": "BassBossRTG",
+        "img": "/images/vol1.png",
+        "ggr": 4520,
+        "rtp": 91.2,
+        "bets": 77,
+        "volatility": 5
+      },
+      {
+        "name": "SpaceCatKA",
+        "img": "/images/vol2.png",
+        "ggr": 3102,
+        "rtp": 88.5,
+        "bets": 148,
+        "volatility": 3
+      },
+      {
+        "name": "AncientDiscoRTG",
+        "img": "/images/vol3.png",
+        "ggr": 2800,
+        "rtp": 85.1,
+        "bets": 112,
+        "volatility": 4
+      },
+      {
+        "name": "JumanjiNET",
+        "img": "/images/vol4.png",
+        "ggr": 1500,
+        "rtp": 90.0,
+        "bets": 168,
+        "volatility": 3
+      },
+      {
+        "name": "NarcosNET",
+        "img": "/images/vol5.png",
+        "ggr": 950,
+        "rtp": 82.4,
+        "bets": 88,
+        "volatility": 5
+      }
+    ]
+  }
+}

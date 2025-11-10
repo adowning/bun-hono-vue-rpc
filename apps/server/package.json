@@ -1,0 +1,25 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/server.ts",
+  "exports": [
+    {
+      "shared": "./src/shared"
+    }
+  ],
+  "scripts": {
+    "dev": "bun --watch run src/server.ts",
+    "db:seed": "bun run src/db/seed.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.80.0",
+    "hono": "^4",
+    "postgres": "^3.4.7",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "bun-types": "latest",
+    "drizzle-kit": "^0.31.6"
+  }
+}

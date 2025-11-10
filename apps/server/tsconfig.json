@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    // Bun-specific settings
+    "types": ["bun", "node"],
+
+    // Modern TS settings
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+
+    // Strictness & Libs
+    "strict": true,
+    "skipLibCheck": true,
+    "lib": ["ESNext", "dom"], // No "DOM" library for the server
+    "noEmit": true, // Bun is the transpiler, TSC is just for type-checking
+    "paths": {
+      "@/*": ["./src/*"],
+      "client/*": ["../client/src/*"],
+      "dashboard/*": ["../dashboard/src/*"],
+      "shared/*": ["../shared/*"]
+    }
+  },
+  "include": [
+    "src/**/*.ts", // Include all source files
+    "drizzle.config.ts" // Include the Drizzle config
+  ],
+  "exclude": ["node_modules", "drizzle"] // Exclude node_modules and Drizzle's output
+}
