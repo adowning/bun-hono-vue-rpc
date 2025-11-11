@@ -1,32 +1,40 @@
-/*
- * import { drizzle } from 'drizzle-orm/bun-sqlite';
- * import { migrate } from 'drizzle-orm/bun-sqlite/migrator';
- * import { Database } from 'bun:sqlite';
- * import { join } from 'path';
- */
+import 'dotenv/config'
+import { drizzle } from 'drizzle-orm/postgres-js'
+import { migrate } from 'drizzle-orm/postgres-js/migrator'
+import { join } from 'path'
 
-// // Get the directory of the current file
-// const __dirname = new URL('.', import.meta.url).pathname;
+// FIX: Use the standard ES Module import.
+// This matches your seed.ts and reset.ts files.
+import postgres from 'postgres'
 
-// // Go up one level (from src/db) to the 'server' root for the db file
-// const dbPath = join(__dirname, '..', '..', 'sqlite.db');
-// const sqlite = new Database(dbPath);
-// const db = drizzle(sqlite);
+const connectionString = process.env.DATABASE_URL
+if (!connectionString) {
+  throw new Error('DATABASE_URL environment variable is not set.')
+}
 
-/*
- * async function runMigrate() {
- *   try {
- *     console.log('Running migrations...');
- *     // Point to the drizzle folder in the 'server' root
- *     const migrationsPath = join(__dirname, '..', '..', 'drizzle');
- *     await migrate(db, { migrationsFolder: migrationsPath });
- *     console.log('Migrations completed successfully.');
- *     process.exit(0);
- *   } catch (error) {
- *     console.error('Migration failed:', error);
- *     process.exit(1);
- *   }
- * }
- */
+// Create the client *for migrations*
+const migrationClient = postgres(connectionString, { max: 1 })
 
-// runMigrate();
+// Pass the postgres-js client to the postgres-js drizzle adapter
+const db = drizzle(migrationClient)
+
+async function runMigrate() {
+  try {
+    console.log('Running migrations...')
+
+    const __dirname = new URL('.', import.meta.url).pathname
+    const migrationsPath = join(__dirname, '..', '..', 'drizzle')
+
+    await migrate(db, { migrationsFolder: migrationsPath })
+
+    console.log('Migrations completed successfully.')
+    await migrationClient.end() // Close the connection
+    process.exit(0)
+  } catch (error) {
+    console.error('Migration failed:', error)
+    await migrationClient.end() // Close on error too
+    process.exit(1)
+  }
+}
+
+runMigrate()

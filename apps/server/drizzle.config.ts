@@ -6,7 +6,15 @@ if (!process.env.DATABASE_URL) {
 }
 
 export default {
-  schema: './src/db/schema.ts',
+  // Point to the new barrel file
+  schema: [
+    './src/db/schema/_enums.ts',
+    './src/db/schema/operators.ts',
+    './src/db/schema/users.ts',
+    './src/db/schema/games.ts',
+    './src/db/schema/wallets.ts',
+    './src/db/schema/logs.ts'
+  ],
   out: './drizzle',
   dialect: 'postgresql', // Changed from 'sqlite'
   casing: 'snake_case',

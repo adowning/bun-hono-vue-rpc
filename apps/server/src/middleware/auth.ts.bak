@@ -1,7 +1,7 @@
 import 'dotenv/config' // Load .env file at the top
 import { createMiddleware } from 'hono/factory'
-import { CurrentUser, db, User, UserBalance, GameSession, eq, and, sql } from '@/db/schema'
-import { userTable, userBalanceTable, gameSessionTable, activeBonusTable } from '@/db/schema'
+import { CurrentUser, db, User, UserBalance, GameSession, eq, and, sql } from '@/db'
+import { userTable, userBalanceTable, gameSessionTable, activeBonusTable } from '@/db'
 import { supabase } from '@/core/supabase'
 import { Session, SupabaseClient, User as SupabaseUser } from '@supabase/supabase-js'
 import { authKeyv } from './cross-kv-cache'

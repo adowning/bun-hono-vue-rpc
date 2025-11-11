@@ -1,7 +1,6 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
-import * as schema from './schema'
-
+import * as postgres from 'postgres'
+import * as schema from '@/db/schema' // <-- UPDATED IMPORT
 /**
  * This script will delete ALL data from the simulation tables.
  * It respects foreign key constraints by deleting in the correct order.

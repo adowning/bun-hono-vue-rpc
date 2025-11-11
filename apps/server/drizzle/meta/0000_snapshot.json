@@ -1,0 +1,1589 @@
+{
+  "id": "3270d1fc-19ba-42e0-bd18-e5f2eeaf859f",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.operators": {
+      "name": "operators",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'system'"
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "balance": {
+          "name": "balance",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 100000
+        },
+        "slots_balance": {
+          "name": "slots_balance",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 100000
+        },
+        "arcade_balance": {
+          "name": "arcade_balance",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 100000
+        },
+        "current_float": {
+          "name": "current_float",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "owner_id": {
+          "name": "owner_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'system'"
+        },
+        "products": {
+          "name": "products",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "operators_name_unique": {
+          "name": "operators_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "auth_id": {
+          "name": "auth_id",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "operator_id": {
+          "name": "operator_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'00000000-0000-0000-0000-000000000000'"
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "avatar": {
+          "name": "avatar",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'avatar-06.avif'"
+        },
+        "roles": {
+          "name": "roles",
+          "type": "user_role_enum[]",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{\"USER\"}'"
+        },
+        "status": {
+          "name": "status",
+          "type": "user_status_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'OFFLINE'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "users_operator_id_operators_id_fk": {
+          "name": "users_operator_id_operators_id_fk",
+          "tableFrom": "users",
+          "tableTo": "operators",
+          "columnsFrom": [
+            "operator_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_auth_id_unique": {
+          "name": "users_auth_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "auth_id"
+          ]
+        },
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.games": {
+      "name": "games",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "category": {
+          "name": "category",
+          "type": "game_categories_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'SLOTS'"
+        },
+        "thumbnail_url": {
+          "name": "thumbnail_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "banner_url": {
+          "name": "banner_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "volatility": {
+          "name": "volatility",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "developer": {
+          "name": "developer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "operator_id": {
+          "name": "operator_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "current_rtp": {
+          "name": "current_rtp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "target_rtp": {
+          "name": "target_rtp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "game_status_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ACTIVE'"
+        },
+        "total_bet_amount": {
+          "name": "total_bet_amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_won_amount": {
+          "name": "total_won_amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_bets": {
+          "name": "total_bets",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_wins": {
+          "name": "total_wins",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "hit_percentage": {
+          "name": "hit_percentage",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_players": {
+          "name": "total_players",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_minutes_played": {
+          "name": "total_minutes_played",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "distinct_players": {
+          "name": "distinct_players",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "min_bet": {
+          "name": "min_bet",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 100
+        },
+        "max_bet": {
+          "name": "max_bet",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 100000
+        },
+        "is_featured": {
+          "name": "is_featured",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "jackpot_group": {
+          "name": "jackpot_group",
+          "type": "type_of_jackpot_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'NONE'"
+        },
+        "goldsvet_data": {
+          "name": "goldsvet_data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "category_index": {
+          "name": "category_index",
+          "columns": [
+            {
+              "expression": "category",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "games_operator_index": {
+          "name": "games_operator_index",
+          "columns": [
+            {
+              "expression": "operator_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "games_status_index": {
+          "name": "games_status_index",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "games_operator_id_operators_id_fk": {
+          "name": "games_operator_id_operators_id_fk",
+          "tableFrom": "games",
+          "tableTo": "operators",
+          "columnsFrom": [
+            "operator_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.active_bonuses": {
+      "name": "active_bonuses",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bonus_log_id": {
+          "name": "bonus_log_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "bonus_status_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ACTIVE'"
+        },
+        "priority": {
+          "name": "priority",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 100
+        },
+        "current_bonus_balance": {
+          "name": "current_bonus_balance",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "current_wagering_remaining": {
+          "name": "current_wagering_remaining",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "active_bonus_user_id_index": {
+          "name": "active_bonus_user_id_index",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "active_bonus_status_index": {
+          "name": "active_bonus_status_index",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "active_bonuses_user_id_users_id_fk": {
+          "name": "active_bonuses_user_id_users_id_fk",
+          "tableFrom": "active_bonuses",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "active_bonuses_bonus_log_id_bonus_logs_id_fk": {
+          "name": "active_bonuses_bonus_log_id_bonus_logs_id_fk",
+          "tableFrom": "active_bonuses",
+          "tableTo": "bonus_logs",
+          "columnsFrom": [
+            "bonus_log_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user_balances": {
+      "name": "user_balances",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "real_balance": {
+          "name": "real_balance",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "free_spins_remaining": {
+          "name": "free_spins_remaining",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "deposit_wagering_remaining": {
+          "name": "deposit_wagering_remaining",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "total_deposited_real": {
+          "name": "total_deposited_real",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "total_withdrawn": {
+          "name": "total_withdrawn",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "total_wagered": {
+          "name": "total_wagered",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "total_won": {
+          "name": "total_won",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "total_bonus_granted": {
+          "name": "total_bonus_granted",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "total_free_spin_wins": {
+          "name": "total_free_spin_wins",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_balances_user_id_users_id_fk": {
+          "name": "user_balances_user_id_users_id_fk",
+          "tableFrom": "user_balances",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "user_balances_user_id_unique": {
+          "name": "user_balances_user_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.bet_logs": {
+      "name": "bet_logs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "game_session_id": {
+          "name": "game_session_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "operator_id": {
+          "name": "operator_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "bet_status_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'COMPLETED'"
+        },
+        "wager_amount": {
+          "name": "wager_amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "win_amount": {
+          "name": "win_amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "wager_paid_from_real": {
+          "name": "wager_paid_from_real",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "wager_paid_from_bonus": {
+          "name": "wager_paid_from_bonus",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "is_hit": {
+          "name": "is_hit",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "generated": {
+            "as": "win_amount > wager_amount",
+            "type": "stored"
+          }
+        },
+        "game_id": {
+          "name": "game_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "game_name": {
+          "name": "game_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "jackpot_contribution": {
+          "name": "jackpot_contribution",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vip_points_added": {
+          "name": "vip_points_added",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "processing_time": {
+          "name": "processing_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "affiliate_id": {
+          "name": "affiliate_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "bet_log_user_id_index": {
+          "name": "bet_log_user_id_index",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "bet_log_status_index": {
+          "name": "bet_log_status_index",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "bet_log_game_id_index": {
+          "name": "bet_log_game_id_index",
+          "columns": [
+            {
+              "expression": "game_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "bet_logs_user_id_users_id_fk": {
+          "name": "bet_logs_user_id_users_id_fk",
+          "tableFrom": "bet_logs",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.bonus_logs": {
+      "name": "bonus_logs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "operator_id": {
+          "name": "operator_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'00000000-0000-0000-0000-000000000000'"
+        },
+        "triggering_deposit_id": {
+          "name": "triggering_deposit_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bonus_type": {
+          "name": "bonus_type",
+          "type": "bonus_type_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bonus_amount": {
+          "name": "bonus_amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "wagering_requirement_total": {
+          "name": "wagering_requirement_total",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "priority": {
+          "name": "priority",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 100
+        },
+        "expires_in_days": {
+          "name": "expires_in_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 7
+        },
+        "meta_data": {
+          "name": "meta_data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "bonus_logs_user_id_users_id_fk": {
+          "name": "bonus_logs_user_id_users_id_fk",
+          "tableFrom": "bonus_logs",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "bonus_logs_triggering_deposit_id_deposit_logs_id_fk": {
+          "name": "bonus_logs_triggering_deposit_id_deposit_logs_id_fk",
+          "tableFrom": "bonus_logs",
+          "tableTo": "deposit_logs",
+          "columnsFrom": [
+            "triggering_deposit_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.deposit_logs": {
+      "name": "deposit_logs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "operator_id": {
+          "name": "operator_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'00000000-0000-0000-0000-000000000000'"
+        },
+        "amount": {
+          "name": "amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "method": {
+          "name": "method",
+          "type": "deposit_method_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "deposit_status_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'PENDING'"
+        },
+        "real_amount_before": {
+          "name": "real_amount_before",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "real_amount_after": {
+          "name": "real_amount_after",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deposit_wagering_required_before": {
+          "name": "deposit_wagering_required_before",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deposit_wagering_required_after": {
+          "name": "deposit_wagering_required_after",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "meta_data": {
+          "name": "meta_data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "deposit_logs_user_id_users_id_fk": {
+          "name": "deposit_logs_user_id_users_id_fk",
+          "tableFrom": "deposit_logs",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.game_sessions": {
+      "name": "game_sessions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "is_bot": {
+          "name": "is_bot",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "auth_session_id": {
+          "name": "auth_session_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "game_id": {
+          "name": "game_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "game_name": {
+          "name": "game_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "session_status_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ACTIVE'"
+        },
+        "total_wagered": {
+          "name": "total_wagered",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_won": {
+          "name": "total_won",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "total_bets": {
+          "name": "total_bets",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "game_session_rtp": {
+          "name": "game_session_rtp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "player_starting_balance": {
+          "name": "player_starting_balance",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "player_ending_balance": {
+          "name": "player_ending_balance",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duration": {
+          "name": "duration",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "game_sessions_user_id_index": {
+          "name": "game_sessions_user_id_index",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "game_sessions_status_index": {
+          "name": "game_sessions_status_index",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "game_sessions_user_id_users_id_fk": {
+          "name": "game_sessions_user_id_users_id_fk",
+          "tableFrom": "game_sessions",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "game_sessions_game_id_games_id_fk": {
+          "name": "game_sessions_game_id_games_id_fk",
+          "tableFrom": "game_sessions",
+          "tableTo": "games",
+          "columnsFrom": [
+            "game_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.withdrawal_logs": {
+      "name": "withdrawal_logs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "operator_id": {
+          "name": "operator_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'00000000-0000-0000-0000-000000000000'"
+        },
+        "status": {
+          "name": "status",
+          "type": "withdrawal_status_enum",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'PENDING'"
+        },
+        "amount": {
+          "name": "amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "real_amount_before": {
+          "name": "real_amount_before",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "real_amount_after": {
+          "name": "real_amount_after",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "meta_data": {
+          "name": "meta_data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "requested_at": {
+          "name": "requested_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "withdrawal_logs_user_id_users_id_fk": {
+          "name": "withdrawal_logs_user_id_users_id_fk",
+          "tableFrom": "withdrawal_logs",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.bet_status_enum": {
+      "name": "bet_status_enum",
+      "schema": "public",
+      "values": [
+        "NSF",
+        "GAME_CHECK_FAILED",
+        "COMPLETED",
+        "CANCELLED_BY_USER",
+        "CANCELLED_BY_SYSTEM",
+        "SERVER_SHUTDOWN",
+        "EXPIRED"
+      ]
+    },
+    "public.bonus_status_enum": {
+      "name": "bonus_status_enum",
+      "schema": "public",
+      "values": [
+        "ACTIVE",
+        "COMPLETED",
+        "EXPIRED",
+        "CANCELLED"
+      ]
+    },
+    "public.bonus_type_enum": {
+      "name": "bonus_type_enum",
+      "schema": "public",
+      "values": [
+        "DEPOSIT_MATCH",
+        "LONG_BONUS_DAY_1",
+        "LONG_BONUS_DAY_2",
+        "VIP_LEVEL_UP",
+        "FREE_SPINS_AWARD"
+      ]
+    },
+    "public.deposit_method_enum": {
+      "name": "deposit_method_enum",
+      "schema": "public",
+      "values": [
+        "DEPOSIT_CASHAPP",
+        "DEPOSIT_INSTORE_CASH",
+        "DEPOSIT_INSTORE_CARD"
+      ]
+    },
+    "public.deposit_status_enum": {
+      "name": "deposit_status_enum",
+      "schema": "public",
+      "values": [
+        "PENDING",
+        "COMPLETED",
+        "FAILED"
+      ]
+    },
+    "public.game_categories_enum": {
+      "name": "game_categories_enum",
+      "schema": "public",
+      "values": [
+        "SLOTS",
+        "FISH",
+        "TABLE",
+        "LIVE",
+        "OTHER"
+      ]
+    },
+    "public.game_status_enum": {
+      "name": "game_status_enum",
+      "schema": "public",
+      "values": [
+        "ACTIVE",
+        "INACTIVE",
+        "MAINTENANCE"
+      ]
+    },
+    "public.type_of_jackpot_enum": {
+      "name": "type_of_jackpot_enum",
+      "schema": "public",
+      "values": [
+        "MINOR",
+        "MAJOR",
+        "MEGA",
+        "NONE"
+      ]
+    },
+    "public.session_status_enum": {
+      "name": "session_status_enum",
+      "schema": "public",
+      "values": [
+        "ACTIVE",
+        "COMPLETED",
+        "EXPIRED",
+        "ABANDONED",
+        "TIMEOUT",
+        "OTP_PENDING",
+        "SHUTDOWN"
+      ]
+    },
+    "public.user_role_enum": {
+      "name": "user_role_enum",
+      "schema": "public",
+      "values": [
+        "USER",
+        "AFFILIATE",
+        "ADMIN",
+        "OPERATOR",
+        "BOT"
+      ]
+    },
+    "public.user_status_enum": {
+      "name": "user_status_enum",
+      "schema": "public",
+      "values": [
+        "ONLINE",
+        "OFFLINE",
+        "BANNED",
+        "INGAME"
+      ]
+    },
+    "public.withdrawal_status_enum": {
+      "name": "withdrawal_status_enum",
+      "schema": "public",
+      "values": [
+        "PENDING",
+        "APPROVED",
+        "REJECTED",
+        "COMPLETED"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

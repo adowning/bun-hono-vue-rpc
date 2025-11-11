@@ -1,5 +1,5 @@
 import { KV } from '@cross/kv'
-import { CurrentUser } from '@/db/schema'
+import { CurrentUser } from '../db/schema'
 
 /**
  * Cross-KV based cache middleware for authentication
