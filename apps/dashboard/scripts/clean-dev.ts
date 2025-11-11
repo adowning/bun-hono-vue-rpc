@@ -2,32 +2,32 @@
 import fs from 'fs/promises'
 import path from 'path'
 
-// 现代化颜色主题
+// Modern color theme
 const theme = {
-  // 基础颜色
+  // Basic colors
   reset: '\x1b[0m',
   bold: '\x1b[1m',
   dim: '\x1b[2m',
 
-  // 前景色
-  primary: '\x1b[38;5;75m', // 亮蓝色
-  success: '\x1b[38;5;82m', // 亮绿色
-  warning: '\x1b[38;5;220m', // 亮黄色
-  error: '\x1b[38;5;196m', // 亮红色
-  info: '\x1b[38;5;159m', // 青色
-  purple: '\x1b[38;5;141m', // 紫色
-  orange: '\x1b[38;5;208m', // 橙色
-  gray: '\x1b[38;5;245m', // 灰色
-  white: '\x1b[38;5;255m', // 白色
+  // Foreground colors
+  primary: '\x1b[38;5;75m', // Bright blue
+  success: '\x1b[38;5;82m', // Bright green
+  warning: '\x1b[38;5;220m', // Bright yellow
+  error: '\x1b[38;5;196m', // Bright red
+  info: '\x1b[38;5;159m', // Cyan
+  purple: '\x1b[38;5;141m', // Purple
+  orange: '\x1b[38;5;208m', // Orange
+  gray: '\x1b[38;5;245m', // Gray
+  white: '\x1b[38;5;255m', // White
 
-  // 背景色
-  bgDark: '\x1b[48;5;235m', // 深灰背景
-  bgBlue: '\x1b[48;5;24m', // 蓝色背景
-  bgGreen: '\x1b[48;5;22m', // 绿色背景
-  bgRed: '\x1b[48;5;52m' // 红色背景
+  // Background colors
+  bgDark: '\x1b[48;5;235m', // Dark gray background
+  bgBlue: '\x1b[48;5;24m', // Blue background
+  bgGreen: '\x1b[48;5;22m', // Green background
+  bgRed: '\x1b[48;5;52m' // Red background
 }
 
-// 现代化图标集
+// Modern icon set
 const icons = {
   rocket: '🚀',
   fire: '🔥',
@@ -59,7 +59,7 @@ const icons = {
   loading: '⏳'
 }
 
-// 格式化工具
+// Formatting tools
 const fmt = {
   title: (text: string) => `${theme.bold}${theme.primary}${text}${theme.reset}`,
   subtitle: (text: string) => `${theme.purple}${text}${theme.reset}`,
@@ -71,11 +71,11 @@ const fmt = {
   dim: (text: string) => `${theme.dim}${theme.gray}${text}${theme.reset}`,
   orange: (text: string) => `${theme.orange}${text}${theme.reset}`,
 
-  // 带背景的文本
+  // Text with background
   badge: (text: string, bg: string = theme.bgBlue) =>
     `${bg}${theme.white}${theme.bold} ${text} ${theme.reset}`,
 
-  // 渐变效果模拟
+  // Gradient effect simulation
   gradient: (text: string) => {
     const colors = ['\x1b[38;5;75m', '\x1b[38;5;81m', '\x1b[38;5;87m', '\x1b[38;5;159m']
     const chars = text.split('')
@@ -83,7 +83,7 @@ const fmt = {
   }
 }
 
-// 创建现代化标题横幅
+// Create modern title banner
 function createModernBanner() {
   console.log()
   console.log(
@@ -93,10 +93,10 @@ function createModernBanner() {
     fmt.gradient('  ║                                                                  ║')
   )
   console.log(
-    `  ║               ${icons.rocket} ${fmt.title('ART DESIGN PRO')} ${fmt.subtitle('· 代码精简程序')} ${icons.magic}                ║`
+    `  ║               ${icons.rocket} ${fmt.title('ART DESIGN PRO')} ${fmt.subtitle('· Code Cleanup Program')} ${icons.magic}                ║`
   )
   console.log(
-    `  ║               ${fmt.dim('为项目移除演示数据，快速切换至开发模式')}             ║`
+    `  ║               ${fmt.dim('Remove demo data from project, switch to development mode')}             ║`
   )
   console.log(
     fmt.gradient('  ║                                                                  ║')
@@ -107,12 +107,12 @@ function createModernBanner() {
   console.log()
 }
 
-// 创建分割线
+// Create divider
 function createDivider(char = '─', color = theme.primary) {
   console.log(`${color}${'  ' + char.repeat(66)}${theme.reset}`)
 }
 
-// 创建卡片样式容器
+// Create card-style container
 function createCard(title: string, content: string[]) {
   console.log(`  ${fmt.badge('', theme.bgBlue)} ${fmt.title(title)}`)
   console.log()
@@ -122,7 +122,7 @@ function createCard(title: string, content: string[]) {
   console.log()
 }
 
-// 进度条动画
+// Progress bar animation
 function createProgressBar(current: number, total: number, text: string, width = 40) {
   const percentage = Math.round((current / total) * 100)
   const filled = Math.round((current / total) * width)
@@ -132,7 +132,7 @@ function createProgressBar(current: number, total: number, text: string, width =
   const emptyBar = '░'.repeat(empty)
 
   process.stdout.write(
-    `\r  ${fmt.info('进度')} [${theme.success}${filledBar}${theme.gray}${emptyBar}${theme.reset}] ${fmt.highlight(percentage + '%')})}`
+    `\r  ${fmt.info('Progress')} [${theme.success}${filledBar}${theme.gray}${emptyBar}${theme.reset}] ${fmt.highlight(percentage + '%')})}`
   )
 
   if (current === total) {
@@ -140,7 +140,7 @@ function createProgressBar(current: number, total: number, text: string, width =
   }
 }
 
-// 统计信息
+// Statistics
 const stats = {
   deletedFiles: 0,
   deletedPaths: 0,
@@ -149,31 +149,31 @@ const stats = {
   totalFiles: 0
 }
 
-// 清理目标
+// Cleanup targets
 const targets = [
   'README.md',
   'README.zh-CN.md',
   'src/views/change',
-  'src/views/safeguard',
+  // 'src/views/safeguard',
   'src/views/article',
   'src/views/examples',
   'src/views/system/nested',
   'src/views/widgets',
   'src/views/template',
   'src/views/dashboard/analysis',
-  'src/views/dashboard/ecommerce',
+  'src/views/dashboard/console',
   'src/mock/json',
   'src/mock/temp/articleList.ts',
   'src/mock/temp/commentDetail.ts',
   'src/mock/temp/commentList.ts',
   'src/assets/img/cover',
-  'src/assets/img/safeguard',
+  // 'src/assets/img/safeguard',
   'src/assets/img/3d',
   'src/components/core/charts/art-map-chart',
   'src/components/custom/comment-widget'
 ]
 
-// 递归统计文件数量
+// Recursively count files
 async function countFiles(targetPath: string): Promise<number> {
   const fullPath = path.resolve(process.cwd(), targetPath)
 
@@ -200,7 +200,7 @@ async function countFiles(targetPath: string): Promise<number> {
   return 0
 }
 
-// 统计所有目标的文件数量
+// Count files for all targets
 async function countAllFiles(): Promise<number> {
   let totalCount = 0
 
@@ -212,7 +212,7 @@ async function countAllFiles(): Promise<number> {
   return totalCount
 }
 
-// 删除文件和目录
+// Delete files and directories
 async function remove(targetPath: string, index: number) {
   const fullPath = path.resolve(process.cwd(), targetPath)
 
@@ -227,23 +227,23 @@ async function remove(targetPath: string, index: number) {
   } catch (err) {
     stats.failedPaths++
     console.log()
-    console.log(`     ${icons.error} ${fmt.error('删除失败')}: ${fmt.highlight(targetPath)}`)
-    console.log(`     ${fmt.dim('错误详情: ' + err)}`)
+    console.log(`     ${icons.error} ${fmt.error('Deletion failed')}: ${fmt.highlight(targetPath)}`)
+    console.log(`     ${fmt.dim('Error details: ' + err)}`)
   }
 }
 
-// 清理路由模块
+// Clean route modules
 async function cleanRouteModules() {
   const modulesPath = path.resolve(process.cwd(), 'src/router/modules')
 
   try {
-    // 删除演示相关的路由模块
+    // Remove demo-related route modules
     const modulesToRemove = [
       'template.ts',
       'widgets.ts',
       'examples.ts',
       'article.ts',
-      'safeguard.ts',
+      // 'safeguard.ts',
       'help.ts'
     ]
 
@@ -252,11 +252,11 @@ async function cleanRouteModules() {
       try {
         await fs.rm(modulePath, { force: true })
       } catch {
-        // 文件不存在时忽略错误
+        // Ignore errors when file doesn't exist
       }
     }
 
-    // 重写 dashboard.ts - 只保留 console
+    // Rewrite dashboard.ts - keep only console
     const dashboardContent = `import { AppRouteRecord } from '@/types/router'
 
 export const dashboardRoutes: AppRouteRecord = {
@@ -266,15 +266,15 @@ export const dashboardRoutes: AppRouteRecord = {
   meta: {
     title: 'menus.dashboard.title',
     icon: 'ri:shopping-bag-4-line',
-    roles: ['R_SUPER', 'R_ADMIN']
+    roles: ['USER', 'ADMIN']
   },
   children: [
     {
-      path: 'console',
-      name: 'Console',
+      path: 'ecommerce',
+      name: 'Ecommerce',
       component: '/dashboard',
       meta: {
-        title: 'menus.dashboard.console',
+        title: 'menus.dashboard.ecommerce',
         keepAlive: false,
         fixedTab: true
       }
@@ -284,7 +284,7 @@ export const dashboardRoutes: AppRouteRecord = {
 `
     await fs.writeFile(path.join(modulesPath, 'dashboard.ts'), dashboardContent, 'utf-8')
 
-    // 重写 system.ts - 移除 nested 嵌套菜单
+    // Rewrite system.ts - remove nested menu
     const systemContent = `import { AppRouteRecord } from '@/types/router'
 
 export const systemRoutes: AppRouteRecord = {
@@ -294,7 +294,7 @@ export const systemRoutes: AppRouteRecord = {
   meta: {
     title: 'menus.system.title',
     icon: 'ri:shopping-bag-4-line',
-    roles: ['R_SUPER', 'R_ADMIN']
+    roles: ['USER', 'ADMIN']
   },
   children: [
     {
@@ -304,7 +304,7 @@ export const systemRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.system.user',
         keepAlive: true,
-        roles: ['R_SUPER', 'R_ADMIN']
+        roles: ['USER', 'ADMIN']
       }
     },
     {
@@ -314,7 +314,7 @@ export const systemRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.system.role',
         keepAlive: true,
-        roles: ['R_SUPER']
+        roles: ['USER']
       }
     },
     {
@@ -335,11 +335,11 @@ export const systemRoutes: AppRouteRecord = {
       meta: {
         title: 'menus.system.menu',
         keepAlive: true,
-        roles: ['R_SUPER'],
+        roles: ['USER'],
         authList: [
-          { title: '新增', authMark: 'add' },
-          { title: '编辑', authMark: 'edit' },
-          { title: '删除', authMark: 'delete' }
+          { title: 'Add', authMark: 'add' },
+          { title: 'Edit', authMark: 'edit' },
+          { title: 'Delete', authMark: 'delete' }
         ]
       }
     }
@@ -348,7 +348,7 @@ export const systemRoutes: AppRouteRecord = {
 `
     await fs.writeFile(path.join(modulesPath, 'system.ts'), systemContent, 'utf-8')
 
-    // 重写 index.ts - 只导入保留的模块
+    // Rewrite index.ts - only import retained modules
     const indexContent = `import { AppRouteRecord } from '@/types/router'
 import { dashboardRoutes } from './dashboard'
 import { systemRoutes } from './system'
@@ -356,7 +356,7 @@ import { resultRoutes } from './result'
 import { exceptionRoutes } from './exception'
 
 /**
- * 导出所有模块化路由
+ * Export all modular routes
  */
 export const routeModules: AppRouteRecord[] = [
   dashboardRoutes,
@@ -367,37 +367,39 @@ export const routeModules: AppRouteRecord[] = [
 `
     await fs.writeFile(path.join(modulesPath, 'index.ts'), indexContent, 'utf-8')
 
-    console.log(`     ${icons.success} ${fmt.success('清理路由模块完成')}`)
+    console.log(`     ${icons.success} ${fmt.success('Route modules cleanup completed')}`)
   } catch (err) {
-    console.log(`     ${icons.error} ${fmt.error('清理路由模块失败')}`)
-    console.log(`     ${fmt.dim('错误详情: ' + err)}`)
+    console.log(`     ${icons.error} ${fmt.error('Route modules cleanup failed')}`)
+    console.log(`     ${fmt.dim('Error details: ' + err)}`)
   }
 }
 
-// 清理路由别名
+// Clean route alias
 async function cleanRoutesAlias() {
   const routesAliasPath = path.resolve(process.cwd(), 'src/router/routesAlias.ts')
 
   try {
     const cleanedAlias = `/**
- * 公共路由别名
- # 存放系统级公共路由路径，如布局容器、登录页等   
+ * Public route alias
+ # Store system-level public route paths, such as layout container, login page, etc.   
  */
 export enum RoutesAlias {
-  Layout = '/index/index', // 布局容器
-  Login = '/auth/login' // 登录页
+  Layout = '/index/index', // Layout container
+  Login = '/auth/login' // Login page
 }
 `
 
     await fs.writeFile(routesAliasPath, cleanedAlias, 'utf-8')
-    console.log(`     ${icons.success} ${fmt.success('重写路由别名配置完成')}`)
+    console.log(
+      `     ${icons.success} ${fmt.success('Route alias configuration rewrite completed')}`
+    )
   } catch (err) {
-    console.log(`     ${icons.error} ${fmt.error('清理路由别名失败')}`)
-    console.log(`     ${fmt.dim('错误详情: ' + err)}`)
+    console.log(`     ${icons.error} ${fmt.error('Route alias cleanup failed')}`)
+    console.log(`     ${fmt.dim('Error details: ' + err)}`)
   }
 }
 
-// 清理变更日志
+// Clean changelog
 async function cleanChangeLog() {
   const changeLogPath = path.resolve(process.cwd(), 'src/mock/upgrade/changeLog.ts')
 
@@ -405,30 +407,30 @@ async function cleanChangeLog() {
     const cleanedChangeLog = `import { ref } from 'vue'
 
 interface UpgradeLog {
-  version: string // 版本号
-  title: string // 更新标题
-  date: string // 更新日期
-  detail?: string[] // 更新内容
-  requireReLogin?: boolean // 是否需要重新登录
-  remark?: string // 备注
+  version: string // Version number
+  title: string // Update title
+  date: string // Update date
+  detail?: string[] // Update content
+  requireReLogin?: boolean // Whether re-login is required
+  remark?: string // Remarks
 }
 
 export const upgradeLogList = ref<UpgradeLog[]>([])
 `
 
     await fs.writeFile(changeLogPath, cleanedChangeLog, 'utf-8')
-    console.log(`     ${icons.success} ${fmt.success('清空变更日志数据完成')}`)
+    console.log(`     ${icons.success} ${fmt.success('Changelog data cleared completed')}`)
   } catch (err) {
-    console.log(`     ${icons.error} ${fmt.error('清理变更日志失败')}`)
-    console.log(`     ${fmt.dim('错误详情: ' + err)}`)
+    console.log(`     ${icons.error} ${fmt.error('Changelog cleanup failed')}`)
+    console.log(`     ${fmt.dim('Error details: ' + err)}`)
   }
 }
 
-// 清理语言文件
+// Clean language files
 async function cleanLanguageFiles() {
   const languageFiles = [
-    { path: 'src/locales/langs/zh.json', name: '中文语言文件' },
-    { path: 'src/locales/langs/en.json', name: '英文语言文件' }
+    { path: 'src/locales/langs/zh.json', name: 'Chinese language file' },
+    { path: 'src/locales/langs/en.json', name: 'English language file' }
   ]
 
   for (const { path: langPath, name } of languageFiles) {
@@ -442,7 +444,7 @@ async function cleanLanguageFiles() {
         'template',
         'article',
         'examples',
-        'safeguard',
+        // 'safeguard',
         'plan',
         'help'
       ]
@@ -458,8 +460,8 @@ async function cleanLanguageFiles() {
           if (langData.menus.dashboard.analysis) {
             delete langData.menus.dashboard.analysis
           }
-          if (langData.menus.dashboard.ecommerce) {
-            delete langData.menus.dashboard.ecommerce
+          if (langData.menus.dashboard.console) {
+            delete langData.menus.dashboard.console
           }
         }
 
@@ -483,34 +485,34 @@ async function cleanLanguageFiles() {
       }
 
       await fs.writeFile(fullPath, JSON.stringify(langData, null, 2), 'utf-8')
-      console.log(`     ${icons.success} ${fmt.success(`清理${name}完成`)}`)
+      console.log(`     ${icons.success} ${fmt.success(`${name} cleanup completed`)}`)
     } catch (err) {
-      console.log(`     ${icons.error} ${fmt.error(`清理${name}失败`)}`)
-      console.log(`     ${fmt.dim('错误详情: ' + err)}`)
+      console.log(`     ${icons.error} ${fmt.error(`${name} cleanup failed`)}`)
+      console.log(`     ${fmt.dim('Error details: ' + err)}`)
     }
   }
 }
 
-// 清理快速入口组件
+// Clean fast enter component
 async function cleanFastEnterComponent() {
   const fastEnterPath = path.resolve(process.cwd(), 'src/config/fastEnter.ts')
 
   try {
     const cleanedFastEnter = `/**
- * 快速入口配置
- * 包含：应用列表、快速链接等配置
+ * Quick entry configuration
+ * Contains: application list, quick links, etc.
  */
 import { WEB_LINKS } from '@/utils/constants'
 import type { FastEnterConfig } from '@/types/config'
 
 const fastEnterConfig: FastEnterConfig = {
-  // 显示条件（屏幕宽度）
+  // Display condition (screen width)
   minWidth: 1200,
-  // 应用列表
+  // Application list
   applications: [
     {
-      name: '工作台',
-      description: '系统概览与数据统计',
+      name: 'Console',
+      description: 'System overview and data statistics',
       icon: 'ri:pie-chart-line',
       iconColor: '#377dff',
       enabled: true,
@@ -518,8 +520,8 @@ const fastEnterConfig: FastEnterConfig = {
       routeName: 'Console'
     },
     {
-      name: '官方文档',
-      description: '使用指南与开发文档',
+      name: 'Official Documentation',
+      description: 'User guide and development documentation',
       icon: 'ri:bill-line',
       iconColor: '#ffb100',
       enabled: true,
@@ -527,8 +529,8 @@ const fastEnterConfig: FastEnterConfig = {
       link: WEB_LINKS.DOCS
     },
     {
-      name: '技术支持',
-      description: '技术支持与问题反馈',
+      name: 'Technical Support',
+      description: 'Technical support and issue feedback',
       icon: 'ri:user-location-line',
       iconColor: '#ff6b6b',
       enabled: true,
@@ -536,8 +538,8 @@ const fastEnterConfig: FastEnterConfig = {
       link: WEB_LINKS.COMMUNITY
     },
     {
-      name: '哔哩哔哩',
-      description: '技术分享与交流',
+      name: 'Bilibili',
+      description: 'Technical sharing and communication',
       icon: 'ri:bilibili-line',
       iconColor: '#FB7299',
       enabled: true,
@@ -545,28 +547,28 @@ const fastEnterConfig: FastEnterConfig = {
       link: WEB_LINKS.BILIBILI
     }
   ],
-  // 快速链接
+  // Quick links
   quickLinks: [
     {
-      name: '登录',
+      name: 'Login',
       enabled: true,
       order: 1,
       routeName: 'Login'
     },
     {
-      name: '注册',
+      name: 'Register',
       enabled: true,
       order: 2,
       routeName: 'Register'
     },
     {
-      name: '忘记密码',
+      name: 'Forgot Password',
       enabled: true,
       order: 3,
       routeName: 'ForgetPassword'
     },
     {
-      name: '个人中心',
+      name: 'Profile',
       enabled: true,
       order: 4,
       routeName: 'UserCenter'
@@ -578,14 +580,16 @@ export default Object.freeze(fastEnterConfig)
 `
 
     await fs.writeFile(fastEnterPath, cleanedFastEnter, 'utf-8')
-    console.log(`     ${icons.success} ${fmt.success('清理快速入口配置完成')}`)
+    console.log(
+      `     ${icons.success} ${fmt.success('Quick entry configuration cleanup completed')}`
+    )
   } catch (err) {
-    console.log(`     ${icons.error} ${fmt.error('清理快速入口配置失败')}`)
-    console.log(`     ${fmt.dim('错误详情: ' + err)}`)
+    console.log(`     ${icons.error} ${fmt.error('Quick entry configuration cleanup failed')}`)
+    console.log(`     ${fmt.dim('Error details: ' + err)}`)
   }
 }
 
-// 更新菜单接口
+// Update menu API
 async function updateMenuApi() {
   const apiPath = path.resolve(process.cwd(), 'src/api/system-manage.ts')
 
@@ -597,14 +601,14 @@ async function updateMenuApi() {
     )
 
     await fs.writeFile(apiPath, updatedContent, 'utf-8')
-    console.log(`     ${icons.success} ${fmt.success('更新菜单接口完成')}`)
+    console.log(`     ${icons.success} ${fmt.success('Menu API update completed')}`)
   } catch (err) {
-    console.log(`     ${icons.error} ${fmt.error('更新菜单接口失败')}`)
-    console.log(`     ${fmt.dim('错误详情: ' + err)}`)
+    console.log(`     ${icons.error} ${fmt.error('Menu API update failed')}`)
+    console.log(`     ${fmt.dim('Error details: ' + err)}`)
   }
 }
 
-// 用户确认函数
+// User confirmation function
 async function getUserConfirmation(): Promise<boolean> {
   const { createInterface } = await import('readline')
 
@@ -615,7 +619,7 @@ async function getUserConfirmation(): Promise<boolean> {
     })
 
     console.log(
-      `  ${fmt.highlight('请输入')} ${fmt.success('yes')} ${fmt.highlight('确认执行清理操作，或按 Enter 取消')}`
+      `  ${fmt.highlight('Please enter')} ${fmt.success('yes')} ${fmt.highlight('to confirm cleanup operation, or press Enter to cancel')}`
     )
     console.log()
     process.stdout.write(`  ${icons.arrow} `)
@@ -627,61 +631,71 @@ async function getUserConfirmation(): Promise<boolean> {
   })
 }
 
-// 显示清理警告
+// Show cleanup warning
 async function showCleanupWarning() {
-  createCard('安全警告', [
-    `${fmt.warning('此操作将永久删除以下演示内容，且无法恢复！')}`,
-    `${fmt.dim('请仔细阅读清理列表，确认后再继续操作')}`
+  createCard('Security Warning', [
+    `${fmt.warning('This operation will permanently delete the following demo content and cannot be restored!')}`,
+    `${fmt.dim('Please read the cleanup list carefully and confirm before proceeding')}`
   ])
 
   const cleanupItems = [
     {
       icon: icons.image,
-      name: '图片资源',
-      desc: '演示用的封面图片、3D图片、运维图片等',
+      name: 'Image Resources',
+      desc: 'Demo cover images, 3D images, operation images, etc.',
       color: theme.orange
     },
     {
       icon: icons.file,
-      name: '演示页面',
-      desc: 'widgets、template、article、examples、safeguard等页面',
+      name: 'Demo Pages',
+      desc: 'widgets、template、article、examples pages, etc.',
       color: theme.purple
     },
     {
       icon: icons.code,
-      name: '路由模块文件',
-      desc: '删除演示路由模块，只保留核心模块（dashboard、system、result、exception）',
+      name: 'Route Module Files',
+      desc: 'Delete demo route modules, keep only core modules (dashboard、system、result、exception)',
       color: theme.primary
     },
     {
       icon: icons.link,
-      name: '路由别名',
-      desc: '重写routesAlias.ts，移除演示路由别名',
+      name: 'Route Alias',
+      desc: 'Rewrite routesAlias.ts, remove demo route aliases',
       color: theme.info
     },
     {
       icon: icons.data,
-      name: 'Mock数据',
-      desc: '演示用的JSON数据、文章列表、评论数据等',
+      name: 'Mock Data',
+      desc: 'Demo JSON data, article lists, comment data, etc.',
       color: theme.success
     },
     {
       icon: icons.globe,
-      name: '多语言文件',
-      desc: '清理中英文语言包中的演示菜单项',
+      name: 'Multi-language Files',
+      desc: 'Clean demo menu items from Chinese and English language packs',
       color: theme.warning
     },
-    { icon: icons.map, name: '地图组件', desc: '移除art-map-chart地图组件', color: theme.error },
-    { icon: icons.chat, name: '评论组件', desc: '移除comment-widget评论组件', color: theme.orange },
+    {
+      icon: icons.map,
+      name: 'Map Component',
+      desc: 'Remove art-map-chart map component',
+      color: theme.error
+    },
+    {
+      icon: icons.chat,
+      name: 'Comment Component',
+      desc: 'Remove comment-widget comment component',
+      color: theme.orange
+    },
     {
       icon: icons.bolt,
-      name: '快速入口',
-      desc: '移除分析页、礼花效果、聊天、更新日志、定价、留言管理等无效项目',
+      name: 'Quick Entry',
+      desc: 'Remove analysis page, fireworks effects, chat, changelog, pricing, message management and other invalid items',
       color: theme.purple
     }
   ]
 
-  console.log(`  ${fmt.badge('', theme.bgRed)} ${fmt.title('将要清理的内容')}`)
+  console.log(`  ${fmt.badge('', theme.bgRed)} ${fmt.title('Content to be cleaned')}`)
   console.log()
 
   cleanupItems.forEach((item, index) => {
@@ -690,16 +704,16 @@ async function showCleanupWarning() {
   })
 
   console.log()
-  console.log(`  ${fmt.badge('', theme.bgGreen)} ${fmt.title('保留的功能模块')}`)
+  console.log(`  ${fmt.badge('', theme.bgGreen)} ${fmt.title('Preserved function modules')}`)
   console.log()
 
   const preservedModules = [
-    { name: 'Dashboard', desc: '工作台页面' },
-    { name: 'System', desc: '系统管理模块' },
-    { name: 'Result', desc: '结果页面' },
-    { name: 'Exception', desc: '异常页面' },
-    { name: 'Auth', desc: '登录注册功能' },
-    { name: 'Core Components', desc: '核心组件库' }
+    { name: 'Dashboard', desc: 'Ecommerce page' },
+    { name: 'System', desc: 'System management module' },
+    { name: 'Result', desc: 'Result pages' },
+    { name: 'Exception', desc: 'Exception pages' },
+    { name: 'Auth', desc: 'Login registration function' },
+    { name: 'Core Components', desc: 'Core component library' }
   ]
 
   preservedModules.forEach((module) => {
@@ -711,25 +725,25 @@ async function showCleanupWarning() {
   console.log()
 }
 
-// 显示统计信息
+// Show statistics
 async function showStats() {
   const duration = Date.now() - stats.startTime
   const seconds = (duration / 1000).toFixed(2)
 
   console.log()
-  createCard('清理统计', [
-    `${fmt.success('成功删除')}: ${fmt.highlight(stats.deletedFiles.toString())} 个文件`,
-    `${fmt.info('涉及路径')}: ${fmt.highlight(stats.deletedPaths.toString())} 个目录/文件`,
+  createCard('Cleanup Statistics', [
+    `${fmt.success('Successfully deleted')}: ${fmt.highlight(stats.deletedFiles.toString())} files`,
+    `${fmt.info('Paths involved')}: ${fmt.highlight(stats.deletedPaths.toString())} directories/files`,
     ...(stats.failedPaths > 0
       ? [
-          `${icons.error} ${fmt.error('删除失败')}: ${fmt.highlight(stats.failedPaths.toString())} 个路径`
+          `${icons.error} ${fmt.error('Deletion failed')}: ${fmt.highlight(stats.failedPaths.toString())} paths`
         ]
       : []),
-    `${fmt.info('耗时')}: ${fmt.highlight(seconds)} 秒`
+    `${fmt.info('Time taken')}: ${fmt.highlight(seconds)} seconds`
   ])
 }
 
-// 创建成功横幅
+// Create success banner
 function createSuccessBanner() {
   console.log()
   console.log(
@@ -739,10 +753,10 @@ function createSuccessBanner() {
     fmt.gradient('  ║                                                                  ║')
   )
   console.log(
-    `  ║                  ${icons.star} ${fmt.success('清理完成！项目已准备就绪')} ${icons.rocket}                  ║`
+    `  ║                  ${icons.star} ${fmt.success('Cleanup completed! Project is ready')} ${icons.rocket}                  ║`
   )
   console.log(
-    `  ║                    ${fmt.dim('现在可以开始您的开发之旅了！')}                  ║`
+    `  ║                    ${fmt.dim('You can now start your development journey!')}                  ║`
   )
   console.log(
     fmt.gradient('  ║                                                                  ║')
@@ -753,84 +767,86 @@ function createSuccessBanner() {
   console.log()
 }
 
-// 主函数
+// Main function
 async function main() {
-  // 清屏并显示横幅
+  // Clear screen and show banner
   console.clear()
   createModernBanner()
 
-  // 显示清理警告
+  // Show cleanup warning
   await showCleanupWarning()
 
-  // 统计文件数量
-  console.log(`  ${fmt.info('正在统计文件数量...')}`)
+  // Count files
+  console.log(`  ${fmt.info('Counting files...')}`)
   stats.totalFiles = await countAllFiles()
 
-  console.log(`  ${fmt.info('即将清理')}: ${fmt.highlight(stats.totalFiles.toString())} 个文件`)
-  console.log(`  ${fmt.dim(`涉及 ${targets.length} 个目录/文件路径`)}`)
+  console.log(
+    `  ${fmt.info('About to clean')}: ${fmt.highlight(stats.totalFiles.toString())} files`
+  )
+  console.log(`  ${fmt.dim(`Involving ${targets.length} directory/file paths`)}`)
   console.log()
 
-  // 用户确认
+  // User confirmation
   const confirmed = await getUserConfirmation()
 
   if (!confirmed) {
-    console.log(`  ${fmt.warning('操作已取消，清理中止')}`)
+    console.log(`  ${fmt.warning('Operation cancelled, cleanup aborted')}`)
     console.log()
     return
   }
 
   console.log()
-  console.log(`  ${icons.check} ${fmt.success('确认成功，开始清理...')}`)
+  console.log(`  ${icons.check} ${fmt.success('Confirmation successful, starting cleanup...')}`)
   console.log()
 
-  // 开始清理过程
-  console.log(`  ${fmt.badge('步骤 1/6', theme.bgBlue)} ${fmt.title('删除演示文件')}`)
+  // Start cleanup process
+  console.log(`  ${fmt.badge('Step 1/6', theme.bgBlue)} ${fmt.title('Delete demo files')}`)
   console.log()
   for (let i = 0; i < targets.length; i++) {
     await remove(targets[i], i)
   }
   console.log()
 
-  console.log(`  ${fmt.badge('步骤 2/6', theme.bgBlue)} ${fmt.title('清理路由模块')}`)
+  console.log(`  ${fmt.badge('Step 2/6', theme.bgBlue)} ${fmt.title('Clean route modules')}`)
   console.log()
   await cleanRouteModules()
   console.log()
 
-  console.log(`  ${fmt.badge('步骤 3/6', theme.bgBlue)} ${fmt.title('重写路由别名')}`)
+  console.log(`  ${fmt.badge('Step 3/6', theme.bgBlue)} ${fmt.title('Rewrite route alias')}`)
   console.log()
   await cleanRoutesAlias()
   console.log()
 
-  console.log(`  ${fmt.badge('步骤 4/6', theme.bgBlue)} ${fmt.title('清空变更日志')}`)
+  console.log(`  ${fmt.badge('Step 4/6', theme.bgBlue)} ${fmt.title('Clear changelog')}`)
   console.log()
   await cleanChangeLog()
   console.log()
 
-  console.log(`  ${fmt.badge('步骤 5/6', theme.bgBlue)} ${fmt.title('清理语言文件')}`)
+  console.log(`  ${fmt.badge('Step 5/6', theme.bgBlue)} ${fmt.title('Clean language files')}`)
   console.log()
   await cleanLanguageFiles()
   console.log()
 
-  console.log(`  ${fmt.badge('步骤 6/7', theme.bgBlue)} ${fmt.title('清理快速入口')}`)
+  console.log(`  ${fmt.badge('Step 6/7', theme.bgBlue)} ${fmt.title('Clean quick entry')}`)
   console.log()
   await cleanFastEnterComponent()
   console.log()
 
-  console.log(`  ${fmt.badge('步骤 7/7', theme.bgBlue)} ${fmt.title('更新菜单接口')}`)
+  console.log(`  ${fmt.badge('Step 7/7', theme.bgBlue)} ${fmt.title('Update menu API')}`)
   console.log()
   await updateMenuApi()
 
-  // 显示统计信息
+  // Show statistics
   await showStats()
 
-  // 显示成功横幅
+  // Show success banner
   createSuccessBanner()
 }
 
 main().catch((err) => {
   console.log()
-  console.log(`  ${icons.error} ${fmt.error('清理脚本执行出错')}`)
-  console.log(`  ${fmt.dim('错误详情: ' + err)}`)
+  console.log(`  ${icons.error} ${fmt.error('Cleanup script execution error')}`)
+  console.log(`  ${fmt.dim('Error details: ' + err)}`)
   console.log()
   process.exit(1)
 })

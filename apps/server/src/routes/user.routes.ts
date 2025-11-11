@@ -159,51 +159,51 @@ export const userRoutes = new Hono<AppEnv>()
    * GET /api/user/summary
    * Returns a formatted summary of currentUser for client consumption
    */
-  .get('/summary', authMiddleware(), async (c) => {
-    const currentUser: CurrentUser = c.get('currentUser')
+  // .get('/summary', authMiddleware(), async (c) => {
+  //   const currentUser: CurrentUser = c.get('currentUser')
 
-    if (!currentUser) {
-      return c.json({ error: 'No current user found' }, 401)
-    }
+  //   if (!currentUser) {
+  //     return c.json({ error: 'No current user found' }, 401)
+  //   }
 
-    try {
-      // Return a formatted summary for client use
-      return c.json({
-        user: {
-          id: currentUser.user.id,
-          email: currentUser.user.email,
-          displayName: currentUser.user.displayName,
-          createdAt: currentUser.user.createdAt
-        },
-        balances: {
-          real: currentUser.balance.realBalance,
-          /*
-           * bonus: currentUser.balance.bonusBalance,
-           * total: currentUser.balance.realBalance + currentUser.balance.bonusBalance,
-           */
-          freeSpins: currentUser.balance.freeSpinsRemaining
-        },
-        activeGame: currentUser.activeGameSession
-          ? {
-              id: currentUser.activeGameSession.id,
-              gameName: currentUser.activeGameSession.gameName,
-              status: currentUser.activeGameSession.status,
-              duration: currentUser.activeGameSession.duration,
-              totalWagered: currentUser.activeGameSession.totalWagered,
-              totalWon: currentUser.activeGameSession.totalWon
-            }
-          : null,
-        session: {
-          id: currentUser.sessionId,
-          expiresAt: currentUser.sessionExpiresAt
-        },
-        lastUpdated: currentUser.lastUpdated
-      })
-    } catch (err: any) {
-      console.error('Error returning user summary:', err.message)
-      return c.json({ error: 'Failed to return user summary', details: err.message }, 500)
-    }
-  })
+  //   try {
+  //     // Return a formatted summary for client use
+  //     return c.json({
+  //       user: {
+  //         id: currentUser.id,
+  //         email: currentUser.email,
+  //         displayName: currentUser.displayName,
+  //         createdAt: currentUser.createdAt
+  //       },
+  //       balances: {
+  //         real: currentUser.balance.realBalance,
+  //         /*
+  //          * bonus: currentUser.balance.bonusBalance,
+  //          * total: currentUser.balance.realBalance + currentUser.balance.bonusBalance,
+  //          */
+  //         freeSpins: currentUser.balance.freeSpinsRemaining
+  //       },
+  //       activeGame: currentUser.activeGameSession
+  //         ? {
+  //             id: currentUser.activeGameSession.id,
+  //             gameName: currentUser.activeGameSession.gameName,
+  //             status: currentUser.activeGameSession.status,
+  //             duration: currentUser.activeGameSession.duration,
+  //             totalWagered: currentUser.activeGameSession.totalWagered,
+  //             totalWon: currentUser.activeGameSession.totalWon
+  //           }
+  //         : null,
+  //       session: {
+  //         id: currentUser.sessionId,
+  //         expiresAt: currentUser.sessionExpiresAt
+  //       },
+  //       lastUpdated: currentUser.lastUpdated
+  //     })
+  //   } catch (err: any) {
+  //     console.error('Error returning user summary:', err.message)
+  //     return c.json({ error: 'Failed to return user summary', details: err.message }, 500)
+  //   }
+  // })
   /*
    * .get('/single/:id', authMiddleware(), async (c) => {
    *   const id = c.req.param('id')
@@ -286,7 +286,7 @@ export const userRoutes = new Hono<AppEnv>()
     const logs = await db.query.betLogTable.findMany({
       where: eq(betLogTable.userId, id),
       limit: params.perPage,
-      offset: params.page * params.perPage,
+      offset: (params.page - 1) * params.perPage,
       orderBy: desc(betLogTable.createdAt)
     })
 
@@ -316,7 +316,7 @@ export const userRoutes = new Hono<AppEnv>()
     const logs = await db.query.depositLogTable.findMany({
       where: eq(depositLogTable.userId, id),
       limit: params.perPage,
-      offset: params.page * params.perPage,
+      offset: (params.page - 1) * params.perPage,
       orderBy: desc(depositLogTable.createdAt)
     })
 
@@ -343,13 +343,14 @@ export const userRoutes = new Hono<AppEnv>()
       return c.json({ error: 'Pagination parameters are required' }, 400)
     }
 
-    const logs = await db.query.depositLogTable.findMany({
+    const logs = await db.query.withdrawalLogTable.findMany({
       where: eq(withdrawalLogTable.userId, id),
       limit: params.perPage,
-      offset: params.page * params.perPage,
+      offset: (params.page - 1) * params.perPage,
       orderBy: desc(withdrawalLogTable.requestedAt)
     })
-
+    console.log(params)
+    console.log(logs)
     // You could also fetch a total count for pagination headers
     const total = await db
       .select({ count: sql`count(*)` })

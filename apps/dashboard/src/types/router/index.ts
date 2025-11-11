@@ -2,7 +2,7 @@
  * 路由相关类型定义
  */
 
-import { RouteRecordRaw } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
 
 /**
  * 路由元数据接口

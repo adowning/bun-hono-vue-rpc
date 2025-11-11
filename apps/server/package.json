@@ -14,10 +14,17 @@
     "lint:check": "eslint --format=json"
   },
   "dependencies": {
+    "@cross/kv": "npm:@jsr/cross__kv",
     "@supabase/supabase-js": "^2.80.0",
     "hono": "^4",
     "postgres": "^3.4.7",
-    "zod": "latest"
+    "zod": "latest",
+    "@supabase/ssr": "^0.7.0",
+    "date-fns": "^4.1.0",
+    "drizzle-orm": "^0.44.7",
+    "drizzle-zod": "^0.8.3",
+    "element-plus": "^2.11.7",
+    "vite": "^7.2.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",

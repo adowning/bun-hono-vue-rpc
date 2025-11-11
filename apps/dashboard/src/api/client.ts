@@ -1,5 +1,7 @@
 // type GetMeReturnType = AsyncReturnType<typeof getMe>
 import { hc } from 'hono/client'
+import { DepositLog, WithdrawalLog } from 'server/shared'
+
 // import type {
 //   AppType, Game,
 //   PaginationParams,
@@ -83,6 +85,51 @@ export const getPlayerBetLogs = async (id: string, params: PaginationParams) => 
   // This type should match the response from your new endpoint
   return (await res.json()) as PaginatedResponse<BetLog>
 }
+export const getPlayerDepositLogs = async (id: string, params: PaginationParams) => {
+  const authHeaders = getSupabaseAuthHeaders()
+  const res = await client.api.users[':id']['deposit-logs'].$get(
+    {
+      param: { id },
+      query: {
+        page: String(params.page),
+        perPage: String(params.perPage)
+      }
+    },
+    {
+      headers: authHeaders
+    }
+  )
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch bet logs')
+  }
+
+  // This type should match the response from your new endpoint
+  return (await res.json()) as PaginatedResponse<DepositLog>
+}
+export const getPlayerWithdrawalLogs = async (id: string, params: PaginationParams) => {
+  const authHeaders = getSupabaseAuthHeaders()
+  const res = await client.api.users[':id']['withdrawal-logs'].$get(
+    {
+      param: { id },
+      query: {
+        page: String(params.page),
+        perPage: String(params.perPage)
+      }
+    },
+    {
+      headers: authHeaders
+    }
+  )
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch bet logs')
+  }
+
+  // This type should match the response from your new endpoint
+  return (await res.json()) as PaginatedResponse<WithdrawalLog>
+}
+
 export const getMe = async (): Promise<CurrentUser> => {
   const authHeaders = getSupabaseAuthHeaders()
 

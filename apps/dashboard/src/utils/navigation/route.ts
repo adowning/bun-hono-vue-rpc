@@ -2,7 +2,7 @@
  * 路由相关工具函数
  */
 
-import { AppRouteRecord } from '@/types'
+import type { AppRouteRecord } from '@/types/router'
 
 // 检查是否为 iframe 路由
 export function isIframe(url: string): boolean {

@@ -104,8 +104,8 @@ export const userTable = pgTable('users', {
   operatorId: text('operator_id').default(HOUSE_ID).notNull(),
   operatorIdNew: uuid('operator_id_new').default(HOUSE_ID).notNull(),
   email: text('email').unique().notNull(),
-  displayName: text('display_name'),
-  avatar: text('avatar').default('avatar-06.avif'),
+  displayName: text('display_name').notNull(),
+  avatar: text('avatar').default('avatar-06.avif').notNull(),
   roles: userRoleEnum('roles').array().notNull().default(['USER']),
   status: userStatusEnum('status').notNull().default('OFFLINE'),
   createdAt: timestamp('created_at').defaultNow().notNull()
@@ -477,8 +477,15 @@ export type NewBetLog = typeof betLogTable.$inferInsert
 
 export const CurrentUserSchema = z.object({
   // Core user information
-  user: userSelectSchema,
-
+  // ...userSelectSchema,
+  authId: z.uuid(),
+  id: z.uuid(),
+  createdAt: z.date(),
+  email: z.string(),
+  displayName: z.string(),
+  avatar: z.string(),
+  roles: z.array(z.string()),
+  status: z.string(),
   // Supabase session information
   sessionId: z.uuid(),
   sessionExpiresAt: z.date().nullable(),

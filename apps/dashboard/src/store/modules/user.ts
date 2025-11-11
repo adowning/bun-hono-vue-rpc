@@ -8,7 +8,7 @@ import { useMenuStore } from './menu'
 import { useSettingStore } from './setting'
 import { useWorktabStore } from './worktab'
 import type { CurrentUser } from 'server/shared'
-import type { AppRouteRecord } from '@/types'
+import type { AppRouteRecord } from '@/types/router'
 
 /**
  * 用户状态管理
@@ -49,11 +49,11 @@ export const useUserStore = defineStore(
      */
     const setCurrentUserInfo = (newInfo: CurrentUser) => {
       info.value = newInfo
-      console.log(newInfo.user)
+      console.log(newInfo)
     }
     const setUserDetailInfo = (newInfo: CurrentUser) => {
       userDetail.value = newInfo
-      console.log(newInfo.user)
+      console.log(newInfo)
     }
     /**
      * 设置登录状态

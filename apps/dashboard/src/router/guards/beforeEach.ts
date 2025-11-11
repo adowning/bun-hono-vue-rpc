@@ -220,7 +220,7 @@ async function getMenuData(router: Router): Promise<void> {
 async function processFrontendMenu(router: Router): Promise<void> {
   const menuList = asyncRoutes.map((route) => menuDataToRouter(route))
   const userStore = useUserStore()
-  const roles = userStore.info?.user.roles
+  const roles = userStore.info?.roles
 
   if (!roles) {
     throw new Error('Failed to obtain user role')

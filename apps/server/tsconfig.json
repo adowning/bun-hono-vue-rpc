@@ -25,6 +25,8 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
+    // "baseUrl": ".",
+    // "rootDir": ".",
     "paths": {
       "@/*": ["./src/*"]
     }

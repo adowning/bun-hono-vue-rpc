@@ -60,11 +60,12 @@
           }
 
           &.is-active {
-            background: var(--el-color-primary-light-9);
+            background: #060e20 !important; // var(--el-color-primary-light-9);
 
             .art-svg-icon,
             span {
-              color: var(--main-color) !important;
+              color: #060e20 !important; //var(--main-color) !important;
+              background: #060e20 !important;
             }
           }
         }
@@ -182,7 +183,7 @@
       display: block;
       width: 100%;
       height: 100vh;
-      background: rgba($color: #000, $alpha: 50%);
+      background: rgba($color: #060e20, $alpha: 50%);
       transition: opacity 0.2s ease-in-out;
     }
   }

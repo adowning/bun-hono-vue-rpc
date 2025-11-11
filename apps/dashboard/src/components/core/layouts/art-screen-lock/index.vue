@@ -18,11 +18,11 @@
     </div>
 
     <!-- 锁屏弹窗 -->
-    <div v-if="!isLock">
+    <div v-if="!isLock && userInfo">
       <ElDialog v-model="visible" :width="370" :show-close="false" @open="handleDialogOpen">
         <div class="flex-c flex-col">
           <img class="w-16 h-16 rounded-full" src="@imgs/user/avatar.webp" alt="用户头像" />
-          <div class="mt-7.5 mb-3.5 text-base font-medium">{{ userInfo.userName }}</div>
+          <div class="mt-7.5 mb-3.5 text-base font-medium">{{ userInfo.displayName }}</div>
           <ElForm
             ref="formRef"
             :model="formData"
@@ -56,11 +56,11 @@
     </div>
 
     <!-- 解锁界面 -->
-    <div v-else class="unlock-content">
+    <div v-else-if="userInfo" class="unlock-content">
       <div class="flex-c flex-col w-90 p-7.5 bg-white/90 rounded-xl">
         <img class="w-16 h-16 mt-5 rounded-full" src="@imgs/user/avatar.webp" alt="用户头像" />
         <div class="mt-7.5 mb-3.5 text-base font-medium">
-          {{ userInfo.userName }}
+          {{ userInfo.displayName }}
         </div>
         <ElForm
           ref="unlockFormRef"

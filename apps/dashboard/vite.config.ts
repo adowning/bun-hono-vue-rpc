@@ -46,12 +46,7 @@ export default ({ mode }: { mode: string }) => {
         '@utils': resolvePath('src/utils'),
         '@stores': resolvePath('src/store'),
         '@plugins': resolvePath('src/plugins'),
-        '@styles': resolvePath('src/assets/styles'),
-        // Fix for @ws-kit client broken imports
-        '@ws-kit/core/src/index.js': '@ws-kit/core',
-        '@ws-kit/core/src/types.js': '@ws-kit/core',
-        '@ws-kit/core/src/errors.js': '@ws-kit/core',
-        'apps/server/src/': '../../../server/src/'
+        '@styles': resolvePath('src/assets/styles')
       }
     },
     build: {

@@ -1,11 +1,10 @@
-import { RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
 import AppConfig from '@/config'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import i18n, { $t } from '@/locales'
 
 /** 扩展的路由配置类型 */
-export type AppRouteRecordRaw = RouteRecordRaw & {
+export type AppRouteRecordRaw = any & {
   hidden?: boolean
 }
 
@@ -24,7 +23,7 @@ export const configureNProgress = () => {
  * 设置页面标题，根据路由元信息和系统信息拼接标题
  * @param to 当前路由对象
  */
-export const setPageTitle = (to: RouteLocationNormalized): void => {
+export const setPageTitle = (to: any): void => {
   const { title } = to.meta
   if (title) {
     setTimeout(() => {

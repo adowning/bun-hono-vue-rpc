@@ -1,8 +1,9 @@
 <template>
   <ArtBasicBanner
+    v-if="userInfo"
     class="justify-center mb-5"
     height="13.3rem"
-    :title="`Welcome back ${userInfo.userName}`"
+    :title="`Welcome back ${userInfo.displayName}`"
     boxStyle="!bg-theme/10"
     titleColor="var(--art-gray-900)"
     :decoration="false"

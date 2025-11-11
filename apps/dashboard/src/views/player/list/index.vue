@@ -185,7 +185,7 @@
     // )
     if (rtp < 75 || rtp > 95) {
       return {
-        type: 'error' as const
+        type: 'danger' as const
       }
     }
     if (rtp < 80 || rtp > 90) {
@@ -391,8 +391,8 @@
         },
         {
           prop: 'operation',
-          label: 'Action',
-          width: 190,
+          label: '',
+          width: 90,
           useSlot: true,
           fixed: 'right'
         }
@@ -656,7 +656,8 @@
   }
 
   const handleView = (row: UserListItem) => {
-    ElMessage.info(`View user ${row.userName}`)
+    // ElMessage.info(`View user ${row.userName}`)
+    router.push({ name: 'PlayerDetail', params: { id: row.id } })
   }
 
   const handleBatchDelete = async () => {
@@ -1215,11 +1216,11 @@
 
         <!-- Action column -->
         <template #operation="{ row }">
-          <div class="flex">
+          <div class="flex justify-end">
             <ArtButtonTable type="view" :row="row" @click="handleView(row)" />
-            <ArtButtonTable type="add" :row="row" @click="handleAdd()" />
+            <!-- <ArtButtonTable type="add" :row="row" @click="handleAdd()" />
             <ArtButtonTable type="edit" :row="row" @click="handleEdit(row)" />
-            <ArtButtonTable type="delete" :row="row" @click="handleDelete(row)" />
+            <ArtButtonTable type="delete" :row="row" @click="handleDelete(row)" /> -->
           </div>
         </template>
 

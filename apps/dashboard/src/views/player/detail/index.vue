@@ -2,7 +2,7 @@
 <template>
   <div class="w-full h-full p-0 bg-transparent border-none shadow-none">
     <div class="relative flex-b mt-2.5 max-md:block max-md:mt-1">
-      <div class="w-112 mr-5 max-md:w-full max-md:mr-0">
+      <div v-if="userInfo" class="w-112 mr-5 max-md:w-full max-md:mr-0">
         <div class="art-card-sm relative p-9 pb-6 overflow-hidden text-center">
           <img class="absolute top-0 left-0 w-full h-50 object-cover" src="/images/sunoco.jpg" />
           <img
@@ -10,8 +10,16 @@
             :src="`https://gameui.cashflowcasino.com/public/avatars/${userInfo.avatar.replace('avif', 'webp')}`"
           />
           <h2 class="mt-5 text-xl font-normal">{{ userInfo.displayName }}</h2>
-          <p class="mt-5 text-sm">Focusing on user experience and visual design</p>
-
+          <!-- <p class="mt-5 text-sm"> -->
+          <div class="flex w-full justify-center mt-4">
+            <ArtCountTo
+              class="mb-1 block text-2xl font-semibold"
+              :target="userInfo.userBalance.realBalance / 100"
+              :duration="2000"
+              :decimals="2"
+              prefix="$"
+              :style="{ textAlign: 'left', color: '#30bd9f', fontWeight: 'bold' }"
+          /></div>
           <div class="w-75 mx-auto mt-7.5 text-left">
             <div class="mt-2.5">
               <ArtSvgIcon icon="ri:mail-line" class="text-g-700" />
@@ -28,7 +36,7 @@
               <span class="ml-2 text-sm">Tyler, Texas</span>
             </div>
             <div class="mt-2.5">
-              <ArtSvgIcon icon="ri:trophy-line" class="text-g-700" />
+              <ArtSvgIcon icon="ri:trophy-line" class="text-yellow-200" />
               <span class="ml-2 text-sm">VIP Rank - 1</span>
             </div>
           </div>
@@ -49,7 +57,7 @@
       </div>
       <div class="flex-1 overflow-hidden max-md:w-full max-md:mt-3.5">
         <el-collapse v-model="activeTab" accordion>
-          <el-collapse-item title="Player Stats (Bet Logs)" name="0">
+          <el-collapse-item title="Player Bets" name="0">
             <div class="art-card-sm">
               <ElScrollbar style="height: 21.55rem" class="w-full">
                 <div class="overflow-auto h-full">
@@ -77,7 +85,68 @@
               </ElScrollbar>
             </div>
           </el-collapse-item>
-          <el-collapse-item title="Player Stats" name="1">
+          <el-collapse-item title="Player Deposits" name="1">
+            <div class="art-card-sm">
+              <ElScrollbar style="height: 21.55rem" class="w-full">
+                <div class="overflow-auto h-full">
+                  <div v-if="loadingStats">Loading stats...</div>
+                  <ArtTable v-else :data="depositLogs" style="width: 100%" size="large">
+                    <ElTableColumn prop="createdAt" label="Date" width="180">
+                      <template #default="scope">
+                        {{ new Date(scope.row.createdAt).toLocaleString() }}
+                      </template>
+                    </ElTableColumn>
+                    <ElTableColumn prop="method" label="Payment Method" />
+                    <ElTableColumn prop="amount" label="Amount">
+                      <template #default="scope">
+                        ${{ (scope.row.amount / 100).toFixed(2) }}
+                      </template>
+                    </ElTableColumn>
+                    <!-- <ElTableColumn prop="winAmount" label="Win">
+                      <template #default="scope">
+                        {{ (scope.row.winAmount / 100).toFixed(2) }}
+                      </template>
+                    </ElTableColumn> -->
+                    <ElTableColumn prop="status" label="Status" />
+                  </ArtTable>
+                </div>
+              </ElScrollbar>
+            </div>
+          </el-collapse-item>
+          <el-collapse-item title="Player Withdrawals" name="2">
+            <div class="art-card-sm">
+              <ElScrollbar style="height: 21.55rem" class="w-full">
+                <div class="overflow-auto h-full">
+                  <div v-if="loadingStats">Loading stats...</div>
+                  <ArtTable v-else :data="withdrawalLogs" style="width: 100%" size="large">
+                    <ElTableColumn prop="requestedAt" label="Requested" width="180">
+                      <template #default="scope">
+                        {{ new Date(scope.row.requestedAt).toLocaleString() }}
+                      </template>
+                    </ElTableColumn>
+                    <ElTableColumn prop="completedAt" label="Completed" width="180">
+                      <template #default="scope">
+                        {{ new Date(scope.row.completedAt).toLocaleString() }}
+                      </template>
+                    </ElTableColumn>
+                    <ElTableColumn prop="method" label="Payment Method" />
+                    <ElTableColumn prop="amount" label="Amount">
+                      <template #default="scope">
+                        ${{ (scope.row.amount / 100).toFixed(2) }}
+                      </template>
+                    </ElTableColumn>
+                    <!-- <ElTableColumn prop="winAmount" label="Win">
+                      <template #default="scope">
+                        {{ (scope.row.winAmount / 100).toFixed(2) }}
+                      </template>
+                    </ElTableColumn> -->
+                    <ElTableColumn prop="status" label="Status" />
+                  </ArtTable>
+                </div>
+              </ElScrollbar>
+            </div>
+          </el-collapse-item>
+          <el-collapse-item title="Player Stats" name="3">
             <div class="art-card-sm">
               <div class="overflow-auto h-full">
                 <ArtTable
@@ -231,10 +300,17 @@
 </template>
 
 <script setup lang="ts">
-  import { getPlayerBetLogs, getUserDetails } from '@/api/client'
+  import {
+    getPlayerBetLogs,
+    getPlayerDepositLogs,
+    getPlayerWithdrawalLogs,
+    getUserDetails
+  } from '@/api/client'
   import { useUserStore } from '@/store/modules/user'
   import type { FormInstance, FormRules } from 'element-plus'
   import { hexToRgb } from '@/utils/ui'
+  import { DepositLog, WithdrawalLog } from 'server/shared'
+  import { BetLog } from 'server/shared'
   // import type { UserDetail, BetLog, PaginationParams } from '../../../../../server/src/shared'
   defineOptions({ name: 'UserCenter' })
   const route = useRoute()
@@ -242,7 +318,6 @@
   const activeTab = ref('1')
   const userStore = useUserStore()
   const userInfo = computed(() => userStore.getUserDetailInfo)
-
   const isEdit = ref(false)
   const isEditPwd = ref(false)
   const date = ref('')
@@ -367,9 +442,13 @@
     isEditPwd.value = !isEditPwd.value
   }
   const userDetail = ref<any>(null) // Use a proper type e.g., UserDetail
-  const betLogs = ref<any[]>([]) // e.g., BetLog[]
+  const betLogs = ref<BetLog[]>([]) // e.g., BetLog[]
+  const depositLogs = ref<DepositLog[]>([]) // e.g., BetLog[]
+  const withdrawalLogs = ref<WithdrawalLog[]>([]) // e.g., BetLog[]
   const loadingStats = ref(false)
-  const statsPagination = ref({ page: 0, perPage: 20, total: 0 })
+  const betsPagination = ref({ page: 0, perPage: 20, total: 0 })
+  const depositsPagination = ref({ page: 0, perPage: 20, total: 0 })
+  const withdrawalsPagination = ref({ page: 0, perPage: 20, total: 0 })
   const playerId = ref(route.params.id as string)
 
   // --- DATA FETCHING ---
@@ -382,32 +461,43 @@
 
       // You can still use the store if you want, but local ref is fine too
       userStore.setUserDetailInfo(data)
-
       // Pre-load data for the default active tab
-      if (activeTab.value === '1') {
-        loadBetLogs()
-      }
+      // if (activeTab.value === '1') {
+      loadBetLogs()
+      // }
+      // if (activeTab.value === '2') {
+      loadTransactionLogs()
+      // }
     }
   })
-
-  // Load data when accordion tab changes
-  // const handleTabChange = (tabName: string | number) => {
-  //   if (tabName === '1' && betLogs.value.length === 0) {
-  //     loadBetLogs()
-  //   }
-  //   // else if (tabName === '4' && depositLogs.value.length === 0) {
-  //   //   loadDepositLogs()
-  //   // }
-  // }
 
   // Specific function to load bet logs
   const loadBetLogs = async () => {
     if (!playerId.value) return
     loadingStats.value = true
     try {
-      const response = await getPlayerBetLogs(playerId.value, statsPagination.value)
+      const response = await getPlayerBetLogs(playerId.value, betsPagination.value)
       betLogs.value = response.data
-      statsPagination.value.total = response.pagination.total
+      betsPagination.value.total = response.pagination.total
+    } catch (err) {
+      console.error('Failed to load bet logs:', err)
+    } finally {
+      loadingStats.value = false
+    }
+  }
+  const loadTransactionLogs = async () => {
+    if (!playerId.value) return
+    loadingStats.value = true
+    try {
+      let [_depositLogs, _withdrawalLogs] = await Promise.all([
+        getPlayerDepositLogs(playerId.value, depositsPagination.value),
+        getPlayerWithdrawalLogs(playerId.value, withdrawalsPagination.value)
+      ])
+
+      depositLogs.value = _depositLogs.data
+      withdrawalLogs.value = _withdrawalLogs.data
+      depositsPagination.value.total = _depositLogs.pagination.total
+      withdrawalsPagination.value.total = _withdrawalLogs.pagination.total
     } catch (err) {
       console.error('Failed to load bet logs:', err)
     } finally {

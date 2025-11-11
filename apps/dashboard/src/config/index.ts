@@ -3,10 +3,10 @@
  * 包含：系统信息、系统主题、菜单主题、菜单布局、系统主色、系统主色列表、系统主色、系统其他项默认配置、快速入口配置
  */
 import { MenuThemeEnum, MenuTypeEnum, SystemThemeEnum } from '@/enums/appEnum'
-import { SystemConfig } from '@/types/config'
 import { configImages } from './assets/images'
 import fastEnterConfig from './fastEnter'
 import { headerBarConfig } from './headerBar'
+import type { SystemConfig } from '@/types/config'
 
 const appConfig: SystemConfig = {
   // 系统信息

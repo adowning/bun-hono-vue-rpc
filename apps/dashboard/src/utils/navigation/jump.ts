@@ -1,4 +1,4 @@
-import { AppRouteRecord } from '@/types/router'
+import type { AppRouteRecord } from '@/types/router'
 import { router } from '@/router'
 
 // 打开外部链接

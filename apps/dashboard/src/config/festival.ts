@@ -3,7 +3,7 @@
  * 包含：礼花效果、滚动文字
  */
 // 图片需要在 components/Ceremony/Fireworks 文件预先定义
-import { FestivalConfig } from '@/types/config'
+import type { FestivalConfig } from '@/types/config'
 // import sd from '@imgs/ceremony/sd.png'
 // import yd from '@imgs/ceremony/yd.png'
 

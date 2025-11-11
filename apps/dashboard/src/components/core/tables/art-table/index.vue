@@ -151,7 +151,7 @@
     border: undefined,
     size: undefined,
     emptyHeight: '100%',
-    emptyText: '暂无数据',
+    emptyText: 'No data yet',
     showTableHeader: true
   })
 

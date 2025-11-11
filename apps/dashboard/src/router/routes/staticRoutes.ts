@@ -1,4 +1,4 @@
-import { AppRouteRecordRaw } from '../utils/utils'
+import type { AppRouteRecordRaw } from '../utils/utils'
 
 /**
  * 静态路由配置（不需要权限就能访问的路由）

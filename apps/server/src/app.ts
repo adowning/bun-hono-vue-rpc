@@ -4,6 +4,7 @@ import { cors } from 'hono/cors'
 import { userRoutes } from './routes/user.routes'
 import { AppEnv } from './middleware/auth'
 import gameRoutes from './routes/game.routes'
+// import { cacheMiddleware } from './middleware/cache'
 
 // --- Database Setup (bun:sql for Postgres) ---
 if (!process.env.DATABASE_URL) {
@@ -21,7 +22,6 @@ app.use(
     allowHeaders: ['Content-Type']
   })
 )
-
 console.log('Hono server with Drizzle (Postgres) running on http://localhost:3000')
 const typedApp = app.route('/users', userRoutes).route('/games', gameRoutes) // .route('/betting', bettingRouter);
 

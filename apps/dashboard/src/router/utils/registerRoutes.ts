@@ -131,21 +131,21 @@ function loadComponent(componentPath: string, routeName: string): () => Promise<
       })
   }
 
-  // 构建可能的路径
+  // Build possible paths
   const fullPath = `../../views${componentPath}.vue`
   const fullPathWithIndex = `../../views${componentPath}/index.vue`
 
-  // 先尝试直接路径，再尝试添加/index的路径
+  // Try the direct path first, then try adding the path to /index
   const module = modules[fullPath] || modules[fullPathWithIndex]
 
   if (!module) {
     console.error(
-      `[路由错误] 未找到组件：${routeName}，尝试过的路径: ${fullPath} 和 ${fullPathWithIndex}`
+      `[Route Error] Component not found: ${routeName}, tried paths: ${fullPath} 和 ${fullPathWithIndex}`
     )
     return () =>
       Promise.resolve({
         render() {
-          return h('div', `组件未找到: ${routeName}`)
+          return h('div', `Component not found: ${routeName}`)
         }
       })
   }

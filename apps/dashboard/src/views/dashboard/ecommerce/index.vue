@@ -1,6 +1,6 @@
 <!-- 电子商务页面 -->
 <template>
-  <div class="ecommerce">
+  <div class="ecommerce" v-if="dashboardData">
     <!-- <ElRow :gutter="20">
       <ElCol :sm="24" :md="24" :lg="16">
         <Banner />

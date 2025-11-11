@@ -17,9 +17,8 @@ let server = Bun.serve({
     const url = new URL(req.url)
     console.log(url.pathname)
     server = serverInstance
-
+    if (url.pathname === '/ws') return new Response(200)
     return typedApp.fetch(req, serverInstance)
   }
 })
-
 console.log('app running on port: ', server.port)

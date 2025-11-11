@@ -1,5 +1,5 @@
 import request from '@/utils/http'
-import { AppRouteRecord } from '@/types/router'
+import type { AppRouteRecord } from '@/types/router'
 
 // 获取用户列表
 export function fetchGetUserList(params: Api.SystemManage.UserSearchParams) {
@@ -20,6 +20,6 @@ export function fetchGetRoleList(params: Api.SystemManage.RoleSearchParams) {
 // 获取菜单列表
 export function fetchGetMenuList() {
   return request.get<AppRouteRecord[]>({
-    url: '/api/system/menus'
+    url: '/api/system/menus/simple'
   })
 }
