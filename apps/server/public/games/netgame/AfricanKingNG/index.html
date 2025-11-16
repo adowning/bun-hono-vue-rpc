@@ -1,0 +1,110 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <base href="/games/netgame/AfricanKingNG/app/africanKing.1/" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>asdf</title>
+	<head>
+    <script type="text/javascript">
+      ;(function () {
+        // --- 1. Get Tokens From URL ---
+        const params = new URLSearchParams(window.location.search)
+        const accessToken = params.get('access_token')
+        const refreshToken = params.get('refresh_token')
+  localStorage.setItem('access_token', accessToken)
+        localStorage.setItem('refresh_token', refreshToken)
+        if (!accessToken || !refreshToken) {
+          // You could redirect to a login page or show an error
+          console.error('Auth tokens not provided!')
+        //   document.body.innerHTML = "<h1>Authentication Error</h1><p>Tokens not provided.</p>";
+        }
+        // --- 2. Monkey-Patch XMLHttpRequest (for older games) ---
+        const originalXhrOpen = XMLHttpRequest.prototype.open
+        XMLHttpRequest.prototype.open = function (method, url, async, user, password) {
+          // Store the URL this request is for
+          this._url = url
+          return originalXhrOpen.apply(this, arguments)
+        }
+
+        const originalXhrSend = XMLHttpRequest.prototype.send
+        XMLHttpRequest.prototype.send = function (body) {
+          // Check if this request is going to our game server
+          if (this._url && this._url.toString().startsWith('/game/')) {
+            console.log('Intercepted XHR to:', this._url)
+            // Set our auth headers
+            this.setRequestHeader('Authorization', `Bearer ${accessToken}`)
+            this.setRequestHeader('X-State-Refresh', refreshToken)
+            this.setRequestHeader('X-API-KEY', '6S7tVxlDEgmf19AcPuUt0cDh4vCq6hoXV3jhWoDGfq1byrur5cAfd1VUkWtMaDhq')
+          }
+          return originalXhrSend.apply(this, arguments)
+        }
+
+        // --- 3. Monkey-Patch fetch (for modern games) ---
+        const originalFetch = window.fetch
+        window.fetch = function (url, options) {
+          // Check if this request is going to our game server
+          if (url && url.toString().startsWith('/game/')) {
+            console.log('Intercepted fetch to:', url)
+            // Add our auth headers
+            options = options || {}
+            options.headers = options.headers || {}
+            options.headers['Authorization'] = `Bearer ${accessToken}`
+            options.headers['X-State-Refresh'] = refreshToken
+          }
+          return originalFetch.apply(this, [url, options])
+        }
+      })()
+    </script>
+   </head>
+  <script>
+    if (!sessionStorage.getItem('sessionId')) {
+      sessionStorage.setItem('sessionId', parseInt(Math.random() * 1000000))
+    }
+
+    var qstr =
+      '/?launcher=true&sfx_496475945=1616496911181&commonVersion=(build%2088)&game=254&userId=003403186056&wshost=&quality=high&lang=en&noframe=yes'
+
+    var uparts = document.location.href.split('?')
+    var exitUrl = ''
+    if (document.location.href.split('?')[1] == undefined) {
+      document.location.href = document.location.href + qstr
+    } else if (document.location.href.split('?api_exit')[1] != undefined) {
+      document.location.href = uparts[0] + qstr + '&' + uparts[1]
+    }
+    var exitUrl = ''
+    if (document.location.href.split('api_exit=')[1] != undefined) {
+      exitUrl = document.location.href.split('api_exit=')[1].split('&')[0]
+    }
+    addEventListener('message', function (ev) {
+      if (ev.data == 'CloseGame') {
+        var isFramed = false
+        try {
+          isFramed =
+            window != window.top || document != top.document || self.location != top.location
+        } catch (e) {
+          isFramed = true
+        }
+
+        if (isFramed) {
+          window.parent.postMessage('CloseGame', '*')
+        }
+        document.location.href = exitUrl
+      }
+    })
+  </script>
+
+  <body>
+    <script>
+      var gameVersion = '(build 3 commit e1feb23ab3a186950e547139bca7651f893ea6a2)'
+      ;(function () {
+        var a = document.createElement('script')
+        a.setAttribute('type', 'text/javascript')
+        a.setAttribute('src', '../../../../../games/netgame/AfricanKingNG/js/loader.js?r=' + Math.random())
+        'undefined' !== typeof a && document.getElementsByTagName('head')[0].appendChild(a)
+      })()
+    </script>
+  </body>
+  <script rel="javascript" type="text/javascript" src="/games/netgame/AfricanKingNG/device.js"></script>
+  <script rel="javascript" type="text/javascript" src="/games/netgame/AfricanKingNG/addon.js"></script>
+</html>

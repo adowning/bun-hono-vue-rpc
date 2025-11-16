@@ -4,7 +4,7 @@
   import { ElMessageBox } from 'element-plus'
   import { useTable, CacheInvalidationStrategy } from '@/composables/useTable'
   import { getColumnKey } from '@/composables/useTableColumns'
-  import { getAllUsersWithBalance } from '@/api/client'
+  import { getAllUsersWithBalance } from '@/services/client'
 
   defineOptions({ name: 'AdvancedTableDemo' })
   const router = useRouter()

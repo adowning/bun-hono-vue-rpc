@@ -92,8 +92,8 @@
 </template>
 
 <script setup lang="ts">
-  import { constants, getMe } from '@/api/client'
-  import { supabase } from '@/api/supabase'
+  import { constants, getMe } from '@/services/client'
+  import { supabase } from '@/services/supabase'
   import { useUserStore } from '@/store/modules/user'
   import type { FormInstance, FormRules } from 'element-plus'
   import { useI18n } from 'vue-i18n'

@@ -6,6 +6,7 @@ import { exceptionRoutes } from './exception'
 import { gameRoutes } from './game'
 import { playerRoutes } from './player'
 import { playerDetailRoutes } from './playerDetails'
+import { devToolsRoutes } from './devtools'
 
 /**
  * Export all modular routes
@@ -17,5 +18,6 @@ export const routeModules: AppRouteRecord[] = [
   exceptionRoutes,
   playerRoutes,
   gameRoutes,
-  playerDetailRoutes
+  playerDetailRoutes,
+  devToolsRoutes
 ]

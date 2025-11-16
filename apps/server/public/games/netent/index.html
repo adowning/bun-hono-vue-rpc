@@ -1,0 +1,284 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui"
+    />
+    <style>
+      body,
+      html {
+        position: fixed;
+      }
+    </style>
+  </head>
+
+  <script>
+    // localStorage.clear()
+    // ;(function () {
+    // --- 1. Get Tokens From URL ---
+    const params = new URLSearchParams(window.location.search)
+    console.log(params)
+    const accessToken = params.get('token')
+    console.log(accessToken)
+
+    localStorage.setItem('access_token', accessToken)
+    if (!accessToken) {
+      console.error('Auth token not provided!')
+      // You could redirect or show an error here
+      // document.body.innerHTML = "<h1>Authentication Error</h1><p>Token not provided.</p>";
+    }
+
+    // --- 2. Monkey-Patch XMLHttpRequest (for older games) ---
+    const originalXhrOpen = XMLHttpRequest.prototype.open
+    XMLHttpRequest.prototype.open = function (method, url, async, user, password) {
+      // Store the URL this request is for
+      this._url = url
+      return originalXhrOpen.apply(this, arguments)
+    }
+
+    const originalXhrSend = XMLHttpRequest.prototype.send
+    XMLHttpRequest.prototype.send = function (body) {
+      // Check if this request is going to our game server
+      // We check for '/games/' which is our PHP API route
+      if (this._url && this._url.toString().startsWith('/games/')) {
+        console.log('Intercepted XHR to:', this._url)
+        // Set our auth headers
+        this.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('access_token')}`)
+        this.setRequestHeader(
+          'X-API-KEY',
+          '6S7tVxlDEgmf19AcPuUt0cDh4vCq6hoXV3jhWoDGfq1byrur5cAfd1VUkWtMaDhq'
+        )
+      }
+      return originalXhrSend.apply(this, arguments)
+    }
+
+    // --- 3. Monkey-Patch fetch (for modern games) ---
+    const originalFetch = window.fetch
+    window.fetch = function (url, options) {
+      // Check if this request is going to our game server
+      if (url && url.toString().startsWith('/game/')) {
+        console.log('Intercepted fetch to:', url)
+        // Add our auth headers
+        options = options || {}
+        options.headers = options.headers || {}
+        options.headers['Authorization'] = `Bearer ${localStorage.getItem('access_token')}`
+        options.headers['X-API-KEY'] =
+          '6S7tVxlDEgmf19AcPuUt0cDh4vCq6hoXV3jhWoDGfq1byrur5cAfd1VUkWtMaDhq'
+      }
+      return originalFetch.apply(this, [url, options])
+    }
+
+    if (!sessionStorage.getItem('sessionId')) {
+      sessionStorage.setItem('sessionId', parseInt(Math.random() * 1000000))
+    }
+
+    var exitUrl = ''
+    if (document.location.href.split('api_exit=')[1] != undefined) {
+      exitUrl = document.location.href.split('api_exit=')[1].split('&')[0]
+    }
+    addEventListener('message', function (ev) {
+      console.log(ev)
+      if (ev.data == 'CloseGame') {
+        var isFramed = false
+        try {
+          isFramed =
+            window != window.top || document != top.document || self.location != top.location
+        } catch (e) {
+          isFramed = true
+        }
+
+        if (isFramed) {
+          window.parent.postMessage('CloseGame', '*')
+        }
+        document.location.href = exitUrl
+      }
+    })
+
+    function ResizeHandler() {
+      var frm = document.getElementById('game')
+
+      frm.style['height'] = window.innerHeight + 'px'
+    }
+
+    addEventListener('resize', ResizeHandler)
+    addEventListener('orientationchange', ResizeHandler)
+
+    // --- 4. Set iframe src with token ---
+    function setIframeSrc() {
+      console.log('Setting iframe with token:', accessToken)
+      const iframe = document.getElementById('game')
+      console.log('Iframe element:', iframe)
+      
+      if (iframe && accessToken) {
+        const baseSrc = '/games/netent/games/flowers_mobile_html/game/flowers_mobile_html.xhtml'
+        const params = new URLSearchParams({
+          'flashParams.bgcolor': '000000',
+          gameId: 'flowers_mobile_html',
+          'mobileParams.lobbyURL': '',
+          server: '/',
+          lang: 'en',
+          sessId: '',
+          operatorId: 'netent',
+          access_token: accessToken // Add token parameter for NetEnt games
+        })
+        iframe.src = baseSrc + '?' + params.toString()
+        console.log('Iframe src set with token:', iframe.src)
+        return true
+      } else if (iframe) {
+        console.warn('Cannot set iframe src: no accessToken available, iframe found:', !!iframe)
+        return false
+      } else {
+        console.warn('Cannot set iframe src: iframe element not found')
+        return false
+      }
+    }
+
+    // Set iframe src after token is available
+    const checkForTokenAndSetup = () => {
+      // Try to get token from URL params first
+      const urlToken = params.get('token')
+      console.log('URL token:', urlToken)
+      
+      // Try to get token from localStorage
+      const storedToken = localStorage.getItem('access_token')
+      console.log('Stored token:', storedToken)
+      
+      const tokenToUse = urlToken || storedToken
+      console.log('Token to use:', tokenToUse ? 'Token found' : 'No token')
+      
+      if (tokenToUse) {
+        // Update accessToken variable for setIframeSrc function
+        window.accessToken = tokenToUse
+        setIframeSrc()
+      } else {
+        // Wait for token to be set (in case it comes from storage or URL)
+        console.log('Waiting for token...')
+        const checkToken = setInterval(() => {
+          const urlTokenCheck = params.get('token')
+          const storedTokenCheck = localStorage.getItem('access_token')
+          const tokenCheck = urlTokenCheck || storedTokenCheck
+          
+          console.log('Checking for token:', { urlTokenCheck, storedTokenCheck, tokenCheck: !!tokenCheck })
+          
+          if (tokenCheck) {
+            window.accessToken = tokenCheck
+            if (setIframeSrc()) {
+              clearInterval(checkToken)
+            }
+          }
+        }, 200)
+        
+        // Also check periodically for iframe element
+        const checkIframe = setInterval(() => {
+          const iframe = document.getElementById('game')
+          if (iframe && window.accessToken) {
+            setIframeSrc()
+            clearInterval(checkIframe)
+          }
+        }, 100)
+      }
+    }
+
+    // Check for token and setup immediately
+    checkForTokenAndSetup()
+    
+    // Also set up a DOM ready check
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', checkForTokenAndSetup)
+    }
+
+    // --- 5. Set up iframe to extract token from URL and patch network requests ---
+    function setupIframeAuthentication() {
+      const iframe = document.getElementById('game')
+      if (iframe) {
+        iframe.addEventListener('load', function () {
+          try {
+            // Inject authentication setup into iframe
+            const iframeWindow = iframe.contentWindow
+            if (iframeWindow && iframeWindow.document) {
+              // Get tokens from localStorage
+              const accessToken = localStorage.getItem('access_token')
+              const refreshToken = localStorage.getItem('refresh_token')
+              
+              const script = iframeWindow.document.createElement('script')
+              script.textContent = `
+                (function() {
+                  console.log('Setting up iframe authentication...')
+                  
+                  // Set up global token scope in iframe context
+                  if (typeof window !== 'undefined') {
+                    window.gameAccessToken = '${accessToken || ''}'
+                    window.gameRefreshToken = '${refreshToken || ''}'
+                    
+                    if (window.gameAccessToken) {
+                      console.log('Iframe: Access token available in global scope')
+                      
+                      // Monkey-patch XMLHttpRequest in iframe context
+                      const originalXhrOpen = XMLHttpRequest.prototype.open
+                      XMLHttpRequest.prototype.open = function (method, url, async, user, password) {
+                        this._url = url
+                        return originalXhrOpen.apply(this, arguments)
+                      }
+
+                      const originalXhrSend = XMLHttpRequest.prototype.send
+                      XMLHttpRequest.prototype.send = function (body) {
+                        if (this._url && this._url.toString().startsWith('/games/')) {
+                          console.log('Iframe XHR intercepted:', this._url)
+                          this.setRequestHeader('Authorization', 'Bearer ' + window.gameAccessToken)
+                          this.setRequestHeader('X-API-KEY', '6S7tVxlDEgmf19AcPuUt0cDh4vCq6hoXV3jhWoDGfq1byrur5cAfd1VUkWtMaDhq')
+                        }
+                        return originalXhrSend.apply(this, arguments)
+                      }
+
+                      // Monkey-patch fetch in iframe context
+                      const originalFetch = window.fetch
+                      window.fetch = function (url, options) {
+                        if (url && url.toString().startsWith('/game/')) {
+                          console.log('Iframe fetch intercepted:', url)
+                          options = options || {}
+                          options.headers = options.headers || {}
+                          options.headers['Authorization'] = 'Bearer ' + window.gameAccessToken
+                          options.headers['X-API-KEY'] = '6S7tVxlDEgmf19AcPuUt0cDh4vCq6hoXV3jhWoDGfq1byrur5cAfd1VUkWtMaDhq'
+                        }
+                        return originalFetch.apply(this, [url, options])
+                      }
+                      
+                      console.log('Iframe: Authentication setup complete')
+                    } else {
+                      console.warn('Iframe: No access token available')
+                    }
+                  }
+                })()
+              `
+              iframeWindow.document.head.appendChild(script)
+            }
+          } catch (e) {
+            console.warn('Could not setup iframe authentication:', e)
+          }
+        })
+      }
+    }
+
+    // Setup iframe authentication
+    setupIframeAuthentication()
+  </script>
+
+  <body
+    onload="ResizeHandler();"
+    style="margin: 0px; width: 100%; background-color: black; overflow: hidden"
+  >
+    <iframe
+      id="game"
+      style="margin: 0px; border: 0px; width: 100%; height: 100vh"
+      src=""
+      allowfullscreen
+    >
+    </iframe>
+  </body>
+  <script rel="javascript" type="text/javascript" src="/games/netent/device.js"></script>
+  <script rel="javascript" type="text/javascript" src="/games/netent/addon.js"></script>
+</html>

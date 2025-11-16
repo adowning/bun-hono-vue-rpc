@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import { getTransactions, getTransactionById } from '@/api/client' // Adjust path
+import { getTransactions, getTransactionById } from '@/services/client' // Adjust path
 import type { PaginationParams, TransactionType } from '../../../../shared/types'
 
 // Pagination meta for responses

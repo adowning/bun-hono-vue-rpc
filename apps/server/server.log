@@ -1,0 +1,17 @@
+Hono server configured with /api and /game routes.
+Connected to Redis for horizontal scaling
+Broadcasting server started on 0.0.0.0:3000
+==========================================
+Broadcasting Server Started
+==========================================
+WebSocket: ws://localhost:3000/ws
+Health: http://localhost:3000/health
+Stats: http://localhost:3000/stats
+
+Features Enabled:
+  ✓ Redis Horizontal Scaling
+  ✓ Authentication
+  ✓ Rate Limiting
+  ✓ Security & Sanitization
+  ✓ Real-time Monitoring
+==========================================

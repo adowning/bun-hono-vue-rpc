@@ -305,7 +305,7 @@
     getPlayerDepositLogs,
     getPlayerWithdrawalLogs,
     getUserDetails
-  } from '@/api/client'
+  } from '@/services/client'
   import { useUserStore } from '@/store/modules/user'
   import type { FormInstance, FormRules } from 'element-plus'
   import { hexToRgb } from '@/utils/ui'

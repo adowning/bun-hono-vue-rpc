@@ -54,7 +54,7 @@
                 class="relative z-[2] overflow-hidden select-none rounded-lg border border-transparent tad-300"
                 :class="{ '!border-[#ff4d4f]': !isPassing && isClickPass }"
               >
-                <ArtDragVerify
+                <!-- <ArtDragVerify
                   ref="dragVerify"
                   v-model:value="isPassing"
                   :text="$t('login.sliderText')"
@@ -63,14 +63,14 @@
                   :progressBarBg="getCssVar('--el-color-primary')"
                   :background="isDark ? '#26272F' : '#F1F1F4'"
                   handlerBg="var(--default-box-color)"
-                />
+                /> -->
               </div>
-              <p
+              <!-- <p
                 class="absolute top-0 z-[1] px-px mt-2 text-xs text-[#f56c6c] tad-300"
                 :class="{ 'translate-y-10': !isPassing && isClickPass }"
               >
                 {{ $t('login.placeholder.slider') }}
-              </p>
+              </p> -->
             </div>
 
             <div class="flex-cb mt-2 text-sm">
@@ -108,8 +108,8 @@
 </template>
 
 <script setup lang="ts">
-  import { getMe } from '@/api/client'
-  import { supabase } from '@/api/supabase'
+  import { getMe } from '@/services/client'
+  import { supabase } from '@/services/supabase'
   import AppConfig from '@/config'
   import { useSettingStore } from '@/store/modules/setting'
   import { useUserStore } from '@/store/modules/user'
@@ -144,8 +144,8 @@
     {
       key: 'super',
       label: t('login.roles.super'),
-      userName: 'Super',
-      password: '123456',
+      userName: 'asdf123',
+      password: 'asdfasdf',
       roles: ['R_SUPER']
     },
     {
@@ -168,16 +168,16 @@
 
   const userStore = useUserStore()
   const router = useRouter()
-  const isPassing = ref(false)
-  const isClickPass = ref(false)
+  const isPassing = ref(true)
+  const isClickPass = ref(true)
 
   const systemName = AppConfig.systemInfo.name
   const formRef = ref<FormInstance>()
 
   const formData = reactive({
     account: '',
-    username: '',
-    password: '',
+    username: 'asdf123',
+    password: 'asdfasdf',
     rememberPassword: true
   })
 

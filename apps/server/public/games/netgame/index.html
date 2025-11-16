@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <!-- <base href="/games/AfricanKingNG/app/africanKing.1/" /> -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui"
+    />
+    <meta nameD="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+    <title></title>
+
+    <script src="device.js"></script>
+
+    <script type="text/javascript">
+      ;(function () {
+        // --- 1. Get Tokens From URL ---
+        const params = new URLSearchParams(window.location.search)
+        const accessToken = params.get('access_token')
+        const refreshToken = params.get('refresh_token')
+        localStorage.setItem('access_token', accessToken)
+        localStorage.setItem('refresh_token', refreshToken)
+        if (!accessToken || !refreshToken) {
+          console.error('Auth tokens not provided!')
+          // You could redirect or show an error here
+          // document.body.innerHTML = "<h1>Authentication Error</h1><p>Tokens not provided.</p>";
+        }
+
+        // --- 2. Monkey-Patch XMLHttpRequest (for older games) ---
+        const originalXhrOpen = XMLHttpRequest.prototype.open
+        XMLHttpRequest.prototype.open = function (method, url, async, user, password) {
+          // Store the URL this request is for
+          this._url = url
+          return originalXhrOpen.apply(this, arguments)
+        }
+
+        const originalXhrSend = XMLHttpRequest.prototype.send
+        XMLHttpRequest.prototype.send = function (body) {
+          // Check if this request is going to our game server
+          // We check for '/game/' which is our PHP API route
+          if (this._url && this._url.toString().startsWith('/games/')) {
+            console.log('Intercepted XHR to:', this._url)
+            // Set our auth headers
+            this.setRequestHeader('Authorization', `Bearer ${accessToken}`)
+            this.setRequestHeader('X-State-Refresh', refreshToken)
+            this.setRequestHeader(
+              'X-API-KEY',
+              '6S7tVxlDEgmf19AcPuUt0cDh4vCq6hoXV3jhWoDGfq1byrur5cAfd1VUkWtMaDhq'
+            )
+          }
+          return originalXhrSend.apply(this, arguments)
+        }
+
+        // --- 3. Monkey-Patch fetch (for modern games) ---
+        const originalFetch = window.fetch
+        window.fetch = function (url, options) {
+          // Check if this request is going to our game server
+          if (url && url.toString().startsWith('/game/')) {
+            console.log('Intercepted fetch to:', url)
+            // Add our auth headers
+            options = options || {}
+            options.headers = options.headers || {}
+            options.headers['Authorization'] = `Bearer ${accessToken}`
+            options.headers['X-State-Refresh'] = refreshToken
+            options.headers['X-API-KEY'] =
+              '6S7tVxlDEgmf19AcPuUt0cDh4vCq6hoXV3jhWoDGfq1byrur5cAfd1VUkWtMaDhq'
+          }
+          return originalFetch.apply(this, [url, options])
+        }
+      })()
+    </script>
+    <link rel="stylesheet" href="css/main.css" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="css/loader.css" type="text/css" media="screen" charset="utf-8" />
+
+    <script src="js/mnt/jquery/jquery-2.1.3.min.js"></script>
+    <script src="js/mnt/phaser/phaserHacks.js"></script>
+    <script src="js/mnt/sockjs.min.js"></script>
+    <script src="js/mnt/progressbar/progressbar.min.js"></script>
+
+    <script src="js/common.js"></script>
+    <script src="js/loader.js"></script>
+    <script src="addon.js"></script>
+  </head>
+  <body style="background-color: #000">
+    <div id="gameArea"></div>
+    <div id="gameOverlay"></div>
+    <div id="ajs-dimmer"></div>
+    <div id="ajs-popup"></div>
+    <div id="game-loader"></div>
+    <div id="check-pos-warning"></div>
+    <div id="check-fs-warning"></div>
+    <div id="check-browser-warning"></div>
+  </body>
+</html>

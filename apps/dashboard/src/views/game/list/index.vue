@@ -173,7 +173,7 @@
 </template>
 
 <script setup lang="ts">
-  import { getAllGames } from '@/api/client'
+  import { getAllGames } from '@/services/client'
   import { useCommon } from '@/composables/useCommon'
   import { router } from '@/router'
   import EmojiText from '@/utils/ui/emojo'

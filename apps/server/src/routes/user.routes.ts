@@ -1,108 +1,107 @@
 import { Hono } from 'hono'
-/*
- * import { AppEnv } from "@/middleware/auth";
- * import { authMiddleware } from "@/middleware/auth";
- */
-import type { CurrentUser } from '@/db'
-import { AppEnv, authMiddleware } from '@/middleware/auth'
-import { desc, eq, sql } from 'drizzle-orm'
-import { z } from 'zod'
-
-/*
- * Import schema and schemas/types
- * import { insertUserSchema, users } from './db/schema';
- */
+import { AppEnv, authMiddleware } from '@/middleware/auth.middleware' // <-- Use new path
+import { and, desc, eq, sql } from 'drizzle-orm'
 import {
-  activeBonusTable,
-  betLogTable,
   db,
+  betLogTable,
   depositLogTable,
-  gameSessionTable,
+  withdrawalLogTable,
   userTable,
-  withdrawalLogTable
+  activeBonusTable,
+  gameSessionTable,
+  UserBalance
 } from '@/db'
-import { getPaginationParams, parsePaginationParams } from '@/utils/pagination'
+import { getPaginationParams } from '@/utils/pagination'
+import { userService } from '@/services/user.service'
+import { sessionService } from '@/services/session.service'
+import { balanceService } from '@/services/balance.service'
+import { supabase } from '@/core/supabase'
+import { CurrentUser } from '@/shared' // <-- Correct import for CurrentUser
+
 export const userRoutes = new Hono<AppEnv>()
 
-  /*
-   * GET /api/user/me
-   * Returns the comprehensive currentUser object with all aggregated data
-   * export function setUserRoutes(app: Hono<AppEnv>) {
+  /**
+   * GET /api/users/me
+   * This is now the "on-demand aggregator"
    */
   .get('/me', authMiddleware(), async (c) => {
-    const currentUser: CurrentUser = c.get('currentUser')
-
-    if (!currentUser) {
-      return c.json({ error: 'No current user found' }, 401)
+    const user = c.get('user') // <-- Get the LEAN user
+    if (!user) {
+      return c.json({ error: 'No user found' }, 401)
     }
 
     try {
-      // Return the comprehensive currentUser object
+      // This route is responsible for getting the Supabase session info
+      const authHeader = c.req.header('Authorization')
+      const accessToken = authHeader?.split(' ')[1]
+      const refreshToken = c.req.header('X-State-Refresh')
+
+      if (!accessToken || !refreshToken) {
+        return c.json({ error: 'Invalid token' }, 401)
+      }
+
+      // Get the full authUser to find session details
+      const {
+        data: { user: authUser },
+        error
+      } = await supabase.auth.getUser(accessToken)
+      if (error || !authUser) {
+        return c.json({ error: 'Failed to authenticate user' }, 401)
+      }
+
+      const session = {
+        id: authUser.id,
+        // Parse 'aud' (audience) claim as the expiration time
+        expiresAt: authUser.aud
+          ? new Date(new Date(0).setUTCSeconds(parseInt(authUser.aud, 10)))
+          : null,
+        refreshToken: refreshToken
+      }
+
+      // Use the new UserService to build the "fat" CurrentUser object
+      const currentUser: CurrentUser = await userService.getFullUserById(user.id, session)
+
       return c.json(currentUser)
     } catch (err: any) {
-      console.error('Error returning currentUser:', err.message)
+      console.error('Error building currentUser:', err.message)
       return c.json({ error: 'Failed to return user data', details: err.message }, 500)
     }
   })
 
-  /*
-   * export const routes = new Hono<AppEnv>()
-   *   .get('/users', async (c) => {
-   *     console.log('GET /users');
-   *     // bun:sql driver is async, no .all() needed
-   *     // const allUsers = await db.select().from(userTable);
-   *     // return c.json(allUsers);
-   *     const currentUser: CurrentUser = c.get("currentUser");
-   */
-
-  /*
-   *     if (!currentUser) {
-   *       return c.json({ error: "No current user found" }, 401);
-   *     }
-   */
-
-  /*
-   *     try {
-   *       // Return the comprehensive currentUser object
-   *       return c.json(currentUser);
-   *     } catch (err: any) {
-   *       console.error("Error returning currentUser:", err.message);
-   *       return c.json({ error: "Failed to return user data", details: err.message }, 500);
-   *     }
-   *   })
-   * GET /api/user/balance
-   * Returns just the balance information from currentUser
+  /**
+   * GET /api/users/balance
+   * Efficiently gets just balance, without Supabase call.
    */
   .get('/balance', authMiddleware(), async (c) => {
-    const currentUser: CurrentUser = c.get('currentUser')
-
-    if (!currentUser) {
+    const user = c.get('user') // <-- Get LEAN user
+    if (!user) {
       return c.json({ error: 'No current user found' }, 401)
     }
 
     try {
-      // Return balance information
+      // 1. Get the user's balance sheet
+      const balance: UserBalance = await balanceService.getOrCreateUserBalance(user.id)
+
+      // 2. Get their active bonuses
+      const activeBonuses = await db.query.activeBonusTable.findMany({
+        where: and(eq(activeBonusTable.userId, user.id), eq(activeBonusTable.status, 'ACTIVE'))
+      })
+
+      // 3. Calculate totals
+      const bonusBalance = activeBonuses.reduce((sum, b) => sum + b.currentBonusBalance, 0)
+      const bonusWagering = activeBonuses.reduce((sum, b) => sum + b.currentWageringRemaining, 0)
+
+      // 4. Return formatted response
       return c.json({
-        realBalance: currentUser.balance.realBalance,
-        /*
-         * bonusBalance: currentUser.balance.bonusBalance,
-         * totalBalance: currentUser.balance.realBalance + currentUser.balance.bonusBalance,
-         */
-        freeSpinsRemaining: currentUser.balance.freeSpinsRemaining,
+        realBalance: balance.realBalance,
+        bonusBalance: bonusBalance,
+        totalBalance: balance.realBalance + bonusBalance,
+        freeSpinsRemaining: balance.freeSpinsRemaining,
         wageringRequirements: {
-          deposit: currentUser.balance.depositWageringRemaining
-          // bonus: currentUser.balance.bonusWageringRemaining
+          deposit: balance.depositWageringRemaining,
+          bonus: bonusWagering
         },
-        totals: {
-          depositedReal: currentUser.balance.totalDepositedReal,
-          // depositedBonus: currentUser.balance.totalDepositedBonus,
-          withdrawn: currentUser.balance.totalWithdrawn,
-          wagered: currentUser.balance.totalWagered,
-          won: currentUser.balance.totalWon,
-          bonusGranted: currentUser.balance.totalBonusGranted,
-          freeSpinWins: currentUser.balance.totalFreeSpinWins
-        },
-        lastUpdated: currentUser.balance.updatedAt
+        lastUpdated: balance.updatedAt
       })
     } catch (err: any) {
       console.error('Error returning balance data:', err.message)
@@ -110,178 +109,58 @@ export const userRoutes = new Hono<AppEnv>()
     }
   })
 
-  /*
-   * GET /api/user/active-game
-   * Returns active game session information from currentUser
+  /**
+   * GET /api/users/active-game
+   * Efficiently gets just the active session.
    */
   .get('/active-game', authMiddleware(), async (c) => {
-    const currentUser: CurrentUser = c.get('currentUser')
-
-    if (!currentUser) {
+    const user = c.get('user')
+    if (!user) {
       return c.json({ error: 'No current user found' }, 401)
     }
 
     try {
-      // Return active game session if exists
-      if (!currentUser.activeGameSession) {
-        return c.json({
-          hasActiveSession: false,
-          message: 'No active game session'
-        })
+      const gameSession = await sessionService.getActiveGameSession(user.id)
+      if (!gameSession) {
+        return c.json({ hasActiveSession: false, message: 'No active game session' })
       }
-
-      const gameSession = currentUser.activeGameSession
-      return c.json({
-        hasActiveSession: true,
-        session: {
-          id: gameSession.id,
-          gameId: gameSession.gameId,
-          gameName: gameSession.gameName,
-          status: gameSession.status,
-          totalWagered: gameSession.totalWagered,
-          totalWon: gameSession.totalWon,
-          totalBets: gameSession.totalBets,
-          rtp: gameSession.gameSessionRtp,
-          playerStartingBalance: gameSession.playerStartingBalance,
-          playerEndingBalance: gameSession.playerEndingBalance,
-          duration: gameSession.duration,
-          createdAt: gameSession.createdAt,
-          updatedAt: gameSession.updatedAt
-        }
-      })
+      return c.json({ hasActiveSession: true, session: gameSession })
     } catch (err: any) {
       console.error('Error returning active game data:', err.message)
       return c.json({ error: 'Failed to return active game data', details: err.message }, 500)
     }
   })
 
-  /*
-   * GET /api/user/summary
-   * Returns a formatted summary of currentUser for client consumption
-   */
-  // .get('/summary', authMiddleware(), async (c) => {
-  //   const currentUser: CurrentUser = c.get('currentUser')
-
-  //   if (!currentUser) {
-  //     return c.json({ error: 'No current user found' }, 401)
-  //   }
-
-  //   try {
-  //     // Return a formatted summary for client use
-  //     return c.json({
-  //       user: {
-  //         id: currentUser.id,
-  //         email: currentUser.email,
-  //         displayName: currentUser.displayName,
-  //         createdAt: currentUser.createdAt
-  //       },
-  //       balances: {
-  //         real: currentUser.balance.realBalance,
-  //         /*
-  //          * bonus: currentUser.balance.bonusBalance,
-  //          * total: currentUser.balance.realBalance + currentUser.balance.bonusBalance,
-  //          */
-  //         freeSpins: currentUser.balance.freeSpinsRemaining
-  //       },
-  //       activeGame: currentUser.activeGameSession
-  //         ? {
-  //             id: currentUser.activeGameSession.id,
-  //             gameName: currentUser.activeGameSession.gameName,
-  //             status: currentUser.activeGameSession.status,
-  //             duration: currentUser.activeGameSession.duration,
-  //             totalWagered: currentUser.activeGameSession.totalWagered,
-  //             totalWon: currentUser.activeGameSession.totalWon
-  //           }
-  //         : null,
-  //       session: {
-  //         id: currentUser.sessionId,
-  //         expiresAt: currentUser.sessionExpiresAt
-  //       },
-  //       lastUpdated: currentUser.lastUpdated
-  //     })
-  //   } catch (err: any) {
-  //     console.error('Error returning user summary:', err.message)
-  //     return c.json({ error: 'Failed to return user summary', details: err.message }, 500)
-  //   }
-  // })
-  /*
-   * .get('/single/:id', authMiddleware(), async (c) => {
-   *   const id = c.req.param('id')
-   *   const user = await db
-   *     .select()
-   *     .from(userTable)
-   *     .where(sql`${userTable.id} = ${id}`)
-   *   return c.json(user[0])
-   * })
-   * .get('/list', authMiddleware(), async (c) => {
-   *   // const allUsers = await db.select().from(userTable)
-   *   const { error, params: paginationParams } = getPaginationParams(c)
-   *   console.log(paginationParams)
-   *   if (!paginationParams || !paginationParams.page || !paginationParams.perPage)
-   *     return c.json({ error: 'Must have paginated params' }, 401)
-   */
-
-  /*
-   *   const allUsers = await db.query.userTable.findMany({
-   *     with: {
-   *       operator: true,
-   *       betLogs: {
-   *         limit: 20,
-   *         orderBy: betLogTable.createdAt
-   *       },
-   *       activeBonuses: {
-   *         limit: 20,
-   *         orderBy: activeBonusTable.createdAt
-   *       },
-   *       userBalance: true
-   *     },
-   *     limit: paginationParams.perPage,
-   *     offset: paginationParams.perPage * paginationParams.page
-   *   })
-   *   console.log(allUsers.length)
-   *   return c.json(allUsers)
-   * })
+  /**
+   * ADMIN-FACING ROUTES
+   * These are fine, they just use the lean middleware for auth
+   * and then fetch their own data.
    */
   .get('/single/:id', authMiddleware(), async (c) => {
     const id = c.req.param('id')
-    if (!id) {
-      return c.json({ error: 'User ID is required' }, 400)
-    }
+    if (!id) return c.json({ error: 'User ID is required' }, 400)
 
-    // Use db.query to fetch relational data
     const userDetail = await db.query.userTable.findFirst({
       where: eq(userTable.id, id),
       with: {
-        // Get the one-to-one user balance
         userBalance: true,
-
-        // Get all currently active bonuses
         activeBonuses: {
           where: eq(activeBonusTable.status, 'ACTIVE'),
           orderBy: desc(activeBonusTable.createdAt)
         },
-
-        // Get the single most recent game session
-        gameSessions: {
-          limit: 1,
-          orderBy: desc(gameSessionTable.createdAt)
-        }
+        gameSessions: { limit: 1, orderBy: desc(gameSessionTable.createdAt) }
       }
     })
 
-    if (!userDetail) {
-      return c.json({ error: 'User not found' }, 404)
-    }
-
+    if (!userDetail) return c.json({ error: 'User not found' }, 404)
     return c.json(userDetail)
   })
+
   .get('/:id/bet-logs', authMiddleware(), async (c) => {
     const id = c.req.param('id')
     const { params } = getPaginationParams(c)
-
-    if (!params || !params.page || !params.perPage) {
+    if (!params || !params.page || !params.perPage)
       return c.json({ error: 'Pagination parameters are required' }, 400)
-    }
 
     const logs = await db.query.betLogTable.findMany({
       where: eq(betLogTable.userId, id),
@@ -289,29 +168,28 @@ export const userRoutes = new Hono<AppEnv>()
       offset: (params.page - 1) * params.perPage,
       orderBy: desc(betLogTable.createdAt)
     })
-
-    // You could also fetch a total count for pagination headers
     const total = await db
       .select({ count: sql`count(*)` })
       .from(betLogTable)
       .where(eq(betLogTable.userId, id))
+    const totalCount = Number(total[0]?.count ?? 0)
 
     return c.json({
       data: logs,
       pagination: {
         page: params.page,
         perPage: params.perPage,
-        total: total[0]?.count ?? 0
+        total: totalCount,
+        totalPages: Math.ceil(totalCount / params.perPage)
       }
     })
   })
+
   .get('/:id/deposit-logs', authMiddleware(), async (c) => {
     const id = c.req.param('id')
     const { params } = getPaginationParams(c)
-
-    if (!params || !params.page || !params.perPage) {
+    if (!params || !params.page || !params.perPage)
       return c.json({ error: 'Pagination parameters are required' }, 400)
-    }
 
     const logs = await db.query.depositLogTable.findMany({
       where: eq(depositLogTable.userId, id),
@@ -319,29 +197,28 @@ export const userRoutes = new Hono<AppEnv>()
       offset: (params.page - 1) * params.perPage,
       orderBy: desc(depositLogTable.createdAt)
     })
-
-    // You could also fetch a total count for pagination headers
     const total = await db
       .select({ count: sql`count(*)` })
       .from(depositLogTable)
       .where(eq(depositLogTable.userId, id))
+    const totalCount = Number(total[0]?.count ?? 0)
 
     return c.json({
       data: logs,
       pagination: {
         page: params.page,
         perPage: params.perPage,
-        total: total[0]?.count ?? 0
+        total: totalCount,
+        totalPages: Math.ceil(totalCount / params.perPage)
       }
     })
   })
+
   .get('/:id/withdrawal-logs', authMiddleware(), async (c) => {
     const id = c.req.param('id')
     const { params } = getPaginationParams(c)
-
-    if (!params || !params.page || !params.perPage) {
+    if (!params || !params.page || !params.perPage)
       return c.json({ error: 'Pagination parameters are required' }, 400)
-    }
 
     const logs = await db.query.withdrawalLogTable.findMany({
       where: eq(withdrawalLogTable.userId, id),
@@ -349,50 +226,48 @@ export const userRoutes = new Hono<AppEnv>()
       offset: (params.page - 1) * params.perPage,
       orderBy: desc(withdrawalLogTable.requestedAt)
     })
-    console.log(params)
-    console.log(logs)
-    // You could also fetch a total count for pagination headers
     const total = await db
       .select({ count: sql`count(*)` })
       .from(withdrawalLogTable)
       .where(eq(withdrawalLogTable.userId, id))
+    const totalCount = Number(total[0]?.count ?? 0)
 
     return c.json({
       data: logs,
       pagination: {
         page: params.page,
         perPage: params.perPage,
-        total: total[0]?.count ?? 0
+        total: totalCount,
+        totalPages: Math.ceil(totalCount / params.perPage)
       }
     })
   })
+
   .get('/list', authMiddleware(), async (c) => {
-    // const allUsers = await db.select().from(userTable)
     const { error, params: paginationParams } = getPaginationParams(c)
-    console.log(paginationParams)
+    if (error) return error
     if (!paginationParams || !paginationParams.page || !paginationParams.perPage)
       return c.json({ error: 'Must have paginated params' }, 401)
 
     const allUsers = await db.query.userTable.findMany({
       with: {
         operator: true,
-        betLogs: {
-          limit: 20,
-          orderBy: betLogTable.createdAt
-        },
-        activeBonuses: {
-          limit: 20,
-          orderBy: activeBonusTable.createdAt
-        },
         userBalance: true
       },
       limit: paginationParams.perPage,
-      offset: paginationParams.perPage * paginationParams.page
+      offset: (paginationParams.page - 1) * paginationParams.perPage
     })
-    console.log(allUsers.length)
-    return c.json(allUsers)
+
+    const total = await db.select({ count: sql`count(*)` }).from(userTable)
+    const totalCount = Number(total[0]?.count ?? 0)
+
+    return c.json({
+      data: allUsers,
+      pagination: {
+        page: paginationParams.page,
+        perPage: paginationParams.perPage,
+        total: totalCount,
+        totalPages: Math.ceil(totalCount / paginationParams.perPage)
+      }
+    })
   })
-/*
- * }
- * export const userRoutes = app;
- */

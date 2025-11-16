@@ -1,0 +1,125 @@
+uid=12_0 RootWebArea "登录 - Cashflow Casino" url="https://game.cashflowcasino.com/dashboard/#/auth/login"
+  uid=12_1 ignored
+    uid=12_2 ignored
+      uid=12_3 generic
+        uid=12_4 ignored
+          uid=12_5 generic
+            uid=12_6 generic
+              uid=12_7 ignored
+                uid=12_8 image "logo" url="https://game.cashflowcasino.com/dashboard/images/logo.png"
+            uid=12_9 generic
+              uid=12_10 ignored
+                uid=12_11 image
+            uid=12_12 generic
+              uid=12_13 generic
+              uid=12_14 generic
+              uid=12_15 generic
+              uid=12_16 generic
+              uid=12_17 generic
+              uid=12_18 generic
+              uid=12_19 generic
+              uid=12_20 generic
+              uid=12_21 generic
+              uid=12_22 generic
+                uid=12_23 generic
+                uid=12_24 generic
+                uid=12_25 generic
+          uid=12_26 generic
+            uid=12_27 generic
+              uid=12_28 generic
+                uid=12_29 generic
+                  uid=12_30 generic
+                  uid=12_31 generic
+                  uid=12_32 generic
+                  uid=12_33 generic
+                  uid=12_34 generic
+                  uid=12_35 generic
+                  uid=12_36 generic
+                uid=12_37 generic
+              uid=12_38 generic
+                uid=12_39 button haspopup="menu"
+                  uid=12_40 ignored
+              uid=12_41 generic
+            uid=12_42 generic
+              uid=12_43 ignored
+                uid=12_44 heading "欢迎回来" level="3"
+                  uid=12_45 StaticText "欢迎回来"
+                    uid=12_46 InlineTextBox "欢迎回来"
+                uid=12_47 paragraph
+                  uid=12_48 StaticText "输入您的账号和密码登录"
+                    uid=12_49 InlineTextBox "输入您的账号和密码登录"
+                uid=12_50 generic
+                  uid=12_51 ignored
+                    uid=12_52 generic
+                      uid=12_53 generic
+                        uid=12_54 generic
+                          uid=12_55 generic
+                            uid=12_56 generic
+                              uid=12_57 combobox haspopup="listbox"
+                                uid=12_58 generic
+                            uid=12_59 generic
+                              uid=12_60 StaticText "超级管理员"
+                                uid=12_61 InlineTextBox "超级管理员"
+                          uid=12_62 ignored
+                            uid=12_63 generic
+                              uid=12_64 image
+                  uid=12_65 ignored
+                    uid=12_66 generic
+                      uid=12_67 generic
+                        uid=12_68 generic
+                          uid=12_69 textbox "请输入账号" value="Super"
+                            uid=12_70 ignored
+                            uid=12_71 generic
+                              uid=12_72 StaticText "Super"
+                                uid=12_73 InlineTextBox "Super"
+                  uid=12_74 ignored
+                    uid=12_75 generic
+                      uid=12_76 generic
+                        uid=12_77 generic
+                          uid=12_78 textbox "请输入密码" value="••••••"
+                            uid=12_79 ignored
+                            uid=12_80 generic
+                              uid=12_81 StaticText "••••••"
+                                uid=12_82 InlineTextBox "••••••"
+                          uid=12_83 ignored
+                            uid=12_84 ignored
+                              uid=12_85 generic
+                                uid=12_86 image
+                  uid=12_87 generic
+                    uid=12_88 generic
+                  uid=12_89 ignored
+                    uid=12_90 LabelText
+                      uid=12_91 ignored
+                        uid=12_92 checkbox "记住密码" checked
+                        uid=12_93 ignored
+                          uid=12_94 ignored
+                      uid=12_95 ignored
+                        uid=12_96 StaticText "记住密码"
+                          uid=12_97 InlineTextBox "记住密码"
+                    uid=12_98 link "忘记密码" url="https://game.cashflowcasino.com/dashboard/#/auth/forget-password"
+                      uid=12_99 StaticText "忘记密码"
+                        uid=12_100 InlineTextBox "忘记密码"
+                  uid=12_101 generic
+                    uid=12_102 button "登录"
+                      uid=12_103 ignored
+                        uid=12_104 StaticText "登录"
+                          uid=12_105 InlineTextBox "登录"
+                  uid=12_106 generic
+                    uid=12_107 StaticText "还没有账号？"
+                      uid=12_108 InlineTextBox "还没有账号？"
+                    uid=12_109 link "注册" url="https://game.cashflowcasino.com/dashboard/#/auth/register"
+                      uid=12_110 StaticText "注册"
+                        uid=12_111 InlineTextBox "注册"
+      uid=12_112 generic
+        uid=12_113 ignored
+      uid=12_114 generic
+        uid=12_115 generic
+          uid=12_116 generic
+          uid=12_117 generic
+            uid=12_118 generic "Toggle devtools panel" description="Toggle Vue DevTools"
+              uid=12_119 image
+            uid=12_120 ignored
+            uid=12_121 generic description="Toggle Component Inspector"
+              uid=12_122 image
+      uid=12_123 generic
+        uid=12_124 ignored

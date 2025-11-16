@@ -1,0 +1,20 @@
+uid=11_0 RootWebArea "登录 - Cashflow Casino" url="https://game.cashflowcasino.com/dashboard/#/auth/login"
+  uid=11_1 image "logo" url="https://game.cashflowcasino.com/dashboard/images/logo.png"
+  uid=11_2 button haspopup="menu"
+  uid=11_3 heading "欢迎回来" level="3"
+  uid=11_4 StaticText "输入您的账号和密码登录"
+  uid=11_5 generic
+    uid=11_6 combobox haspopup="listbox"
+    uid=11_7 StaticText "超级管理员"
+  uid=11_8 generic
+    uid=11_9 textbox "请输入账号" value="Super"
+  uid=11_10 generic
+    uid=11_11 textbox "请输入密码" value="••••••"
+  uid=11_12 checkbox "记住密码" checked
+  uid=11_13 StaticText "记住密码"
+  uid=11_14 link "忘记密码" url="https://game.cashflowcasino.com/dashboard/#/auth/forget-password"
+    uid=11_15 StaticText "忘记密码"
+  uid=11_16 button "登录"
+  uid=11_17 StaticText "还没有账号？"
+  uid=11_18 link "注册" url="https://game.cashflowcasino.com/dashboard/#/auth/register"
+    uid=11_19 StaticText "注册"

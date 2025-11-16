@@ -1,5 +1,5 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
-import * as postgres from 'postgres'
+import postgres from 'postgres'
 import * as schema from '@/db/schema' // <-- UPDATED IMPORT
 /**
  * This script will delete ALL data from the simulation tables.

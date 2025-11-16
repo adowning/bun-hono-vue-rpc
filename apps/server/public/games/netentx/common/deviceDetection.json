@@ -1,0 +1,276 @@
+{
+  "definitions": {
+    "operatingSystems": {
+      "iOS": {
+        "name": "iOS",
+        "preferredBrowser": "Safari",
+        "matchPattern": "(?:iPhone);.+OS\\s\\d+_\\d+(?:_\\d+)?\\slike Mac OS X",
+        "version": {
+          "matchPattern": "OS (\\d+_\\d+(?:_\\d+)?) like Mac OS X",
+          "separator": "_"
+        }
+      },
+      "iPadOS": {
+        "name": "iPad iOS",
+        "preferredBrowser": "Safari",
+        "matchPattern": "(?:iPad);.+OS\\s\\d+_\\d+(?:_\\d+)?\\slike Mac OS X",
+        "version": {
+          "matchPattern": "OS (\\d+_\\d+(?:_\\d+)?) like Mac OS X",
+          "separator": "_"
+        }
+      },
+      "android": {
+        "name": "Android",
+        "preferredBrowser": "Chrome",
+        "matchPattern": "\\((?:Linux;\\s(?:U;\\s)?)?Android\\s*(\\d+)\\.?(\\d?)\\.?(\\d?)?(?=.*Mobile);",
+        "version": {
+          "matchPattern": "Android (\\d+)\\.?(\\d?)"
+        }
+      },
+      "androidTab": {
+        "name": "Android",
+        "preferredBrowser": "Chrome",
+        "matchPattern": "\\((?:Linux;\\s(?:U;\\s)?)?Android\\s*(\\d+)\\.?(\\d?)\\.?(\\d?)?(?!.*Mobile);",
+        "version": {
+          "matchPattern": "Android (\\d+)\\.?(\\d?)"
+        }
+      },
+      "osX": {
+        "name": "OS X",
+        "preferredBrowser": "Safari",
+        "matchPattern": "\\(Macintosh;.+Mac OS X \\d+[_.]\\d+(?:[_.]\\d+)?",
+        "version": {
+          "matchPattern": "\\(Macintosh;.+Mac OS X (\\d+[_.]\\d+(?:[_.]\\d+)?)",
+          "separator": "_"
+        }
+      },
+      "windows7": {
+        "name": "Windows 7",
+        "preferredBrowser": "Chrome",
+        "matchPattern": "Windows NT 6\\.1",
+        "version": {
+          "matchPattern": "Windows NT (6\\.1)"
+        }
+      },
+      "windows8": {
+        "name": "Windows 8",
+        "preferredBrowser": "Chrome",
+        "matchPattern": "Windows NT 6\\.2",
+        "version": {
+          "matchPattern": "Windows NT (6\\.2)"
+        }
+      },
+      "windows8.1": {
+        "name": "Windows 8.1",
+        "preferredBrowser": "Chrome",
+        "matchPattern": "Windows NT 6\\.3",
+        "version": {
+          "matchPattern": "Windows NT (6\\.3)"
+        }
+      },
+      "windows": {
+        "name": "Windows",
+        "preferredBrowser": "Chrome",
+        "matchPattern": "Windows NT \\d+\\.\\d+(?:\\.\\d+)?",
+        "version": {
+          "matchPattern": "Windows NT (\\d+\\.\\d+(?:\\.\\d+)?)"
+        }
+      },
+      "androidApp": {
+        "name": "androidApp",
+        "preferredBrowser": "chromeWebView",
+        "matchPattern": "\\((?:Linux;\\s(?:U;\\s)?)?Android\\s*\\d+\\.\\d+(?:\\.\\d+)?;.+wv"
+      }
+    },
+    "browsers": {
+      "chromeWebView": {
+        "name": "chromeWebView",
+        "matchPattern": "\\((?:Linux;\\s(?:U;\\s)?)?Android\\s*\\d+\\.\\d+(?:\\.\\d+)?;.+wv"
+      },
+      "safari": {
+        "name": "Safari",
+        "matchPattern": "(?!.*MQQBrowser) Version\\/.+Safari\/\\d+\\.\\d+(?:\\.\\d+)?",
+        "version": {
+          "matchPattern": "Version\/(\\d+\\.\\d+(?:\\.\\d+)?)"
+        }
+      },
+      "criOS": {
+        "name": "CriOS",
+        "matchPattern": "CriOS\\/(\\d+)?\\.?(\\d+)?",
+        "version": {
+          "matchPattern": "CriOS\\/(\\d+)?\\.?(\\d+)?"
+        }
+      },
+      "chrome": {
+        "name": "Chrome",
+        "matchPattern": "\\sChrome\\/\\d+(?:\\.\\d+)*?(?:\\sMobile)?\\sSafari\\/(?:\\d+(?:\\.\\d+)*)$",
+        "version": {
+          "matchPattern": "Chrome\\/(\\d+\\.\\d+(?:\\.\\d+)?)"
+        }
+      },
+      "samsungBrowser": {
+        "name": "Samsung Browser",
+        "matchPattern": "SamsungBrowser\/\\d+\\.\\d+(?:\\.\\d+)?",
+        "version": {
+          "matchPattern": "SamsungBrowser\/(\\d+\\.\\d+(?:\\.\\d+)?)"
+        }
+      },
+      "firefox": {
+        "name": "Firefox",
+        "matchPattern": "Firefox\\/\\d+\\.\\d+(?:\\.\\d+)?",
+        "version": {
+          "matchPattern": "Firefox\\/(\\d+\\.\\d+(?:\\.\\d+)?)"
+        }
+      },
+      "edge": {
+        "name": "edge",
+        "matchPattern": "Edg[e]?\\/\\d+\\.\\d+(?:\\.\\d+)?",
+        "version": {
+          "matchPattern": "Edg[e]?\\/(\\d+\\.\\d+(?:\\.\\d+)?)"
+        }
+      }
+    }
+  },
+  "ruleSets": {
+    "white": {
+      "androidApp": {
+        "browsers": {
+          "chromeWebView": {}
+        }
+      },
+      "iOS": {
+        "version": {
+          "min": "12.0"
+        },
+        "browsers": {
+          "safari": {
+            "version": {
+              "min": "12.0"
+            }
+          },
+          "criOS": {
+            "version": {
+              "min": "85.0"
+            }
+          }
+        }
+      },
+      "iPadOS": {
+        "version": {
+          "min": "13.0"
+        },
+        "browsers": {
+          "safari": {
+            "version": {
+              "min": "13.0"
+            }
+          }
+        }
+      },
+      "android": {
+        "version": {
+          "min": "7.0"
+        },
+        "browsers": {
+          "samsungBrowser": {
+            "version": {
+              "min": "11.0"
+            }
+          },
+          "chrome": {
+            "version": {
+              "min": "85.0"
+            }
+          }
+        }
+      },
+      "androidTab": {
+        "version": {
+          "min": "10.0"
+        },
+        "browsers": {
+          "chrome": {
+            "version": {
+              "min": "85.0"
+            }
+          }
+        }
+      },
+      "osX": {
+        "version": {
+          "min": "10.15"
+        },
+        "browsers": {
+          "safari": {
+            "version": {
+              "min": "13.0"
+            }
+          },
+          "chrome": {
+            "version": {
+              "min": "85.0"
+            }
+          }
+        }
+      },
+      "windows7": {
+        "version": {
+          "min": "6.1"
+        },
+        "browsers": {
+          "chrome": {
+            "version": {
+              "min": "85.0"
+            }
+          }
+        }
+      },
+      "windows8": {
+        "version": {
+          "min": "6.2"
+        },
+        "browsers": {
+          "chrome": {
+            "version": {
+              "min": "85.0"
+            }
+          }
+        }
+      },
+      "windows8.1": {
+        "version": {
+          "min": "6.3"
+        },
+        "browsers": {
+          "chrome": {
+            "version": {
+              "min": "85.0"
+            }
+          }
+        }
+      },
+      "windows": {
+        "version": {
+          "min": "10.0"
+        },
+        "browsers": {
+          "chrome": {
+            "version": {
+              "min": "85.0"
+            }
+          },
+          "firefox": {
+            "version": {
+              "min": "81.0"
+            }
+          },
+          "edge": {
+            "version": {
+              "min": "85.0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

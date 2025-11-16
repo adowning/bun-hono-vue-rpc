@@ -1,0 +1,20 @@
+uid=1_0 RootWebArea "登录 - Cashflow Casino" url="http://localhost:3007/dashboard/devtools#/auth/login"
+  uid=1_1 image "logo" url="https://game.cashflowcasino.com/dashboard/images/logo.png"
+  uid=1_2 button haspopup="menu"
+  uid=1_3 heading "欢迎回来" level="3"
+  uid=1_4 StaticText "输入您的账号和密码登录"
+  uid=1_5 generic
+    uid=1_6 combobox haspopup="listbox"
+    uid=1_7 StaticText "超级管理员"
+  uid=1_8 generic
+    uid=1_9 textbox "请输入账号" value="asdf123"
+  uid=1_10 generic
+    uid=1_11 textbox "请输入密码" value="••••••••"
+  uid=1_12 checkbox "记住密码" checked
+  uid=1_13 StaticText "记住密码"
+  uid=1_14 link "忘记密码" url="http://localhost:3007/dashboard/devtools#/auth/forget-password"
+    uid=1_15 StaticText "忘记密码"
+  uid=1_16 button "登录"
+  uid=1_17 StaticText "还没有账号？"
+  uid=1_18 link "注册" url="http://localhost:3007/dashboard/devtools#/auth/register"
+    uid=1_19 StaticText "注册"

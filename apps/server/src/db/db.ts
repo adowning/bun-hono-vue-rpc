@@ -2,6 +2,7 @@ import { drizzle } from 'drizzle-orm/bun-sql' // Use the bun-sql adapter
 import { SQL } from 'bun' // Use bun:sql for runtime
 // Import all the parts of our schema explicitly
 import * as enums from '@/db/schema/_enums'
+import * as customTypes from '@/db/schema/_custom-types' // <-- NEW
 import * as operators from '@/db/schema/operators'
 import * as users from '@/db/schema/users'
 import * as games from '@/db/schema/games'
@@ -12,6 +13,7 @@ import * as relations from '@/db/schema/relations'
 // Combine them into the schema object for the RUNTIME
 const schema = {
   ...enums,
+  ...customTypes, // <-- NEW
   ...operators,
   ...users,
   ...games,

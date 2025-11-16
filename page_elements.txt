@@ -1,0 +1,8 @@
+uid=1_0 RootWebArea "Server Test Harness" url="http://localhost:3000/"
+  uid=1_1 heading "1. Auth" level="2"
+  uid=1_2 textbox "test@example.com" value="testuser1@example.com"
+  uid=1_3 textbox "password" value="•••••••••••"
+  uid=1_4 button "Sign Up"
+  uid=1_5 button "Log In"
+  uid=1_6 heading "Test Log" level="3"
+  uid=1_7 StaticText "Test log... waiting for actions."

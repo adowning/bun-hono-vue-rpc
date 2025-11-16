@@ -8,8 +8,8 @@ import {
   withdrawalStatusEnum,
   betStatusEnum
 } from './_enums'
-import { userTable } from './users' // <-- Synchronous import
-import { gameTable } from './games' // <-- Synchronous import
+import { userTable } from './users'
+import { gameTable } from './games'
 
 const HOUSE_ID = '00000000-0000-0000-0000-000000000000'
 
@@ -24,10 +24,10 @@ export const gameSessionTable = pgTable(
     authSessionId: uuid(),
     userId: uuid('user_id')
       .notNull()
-      .references(() => userTable.id), // <-- Synchronous thunk
+      .references(() => userTable.id),
     gameId: uuid('game_id')
       .notNull()
-      .references(() => gameTable.id), // <-- Synchronous thunk
+      .references(() => gameTable.id),
     gameName: text(),
     status: sessionStatusEnum('status').default('ACTIVE').notNull(),
     totalWagered: integer().default(0),
@@ -37,6 +37,10 @@ export const gameSessionTable = pgTable(
     playerStartingBalance: integer(),
     playerEndingBalance: integer(),
     duration: integer().default(0),
+    
+    // --- NEW COLUMN for PHP game state ---
+    sessionData: jsonb('session_data'),
+    
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
       .defaultNow()
@@ -57,7 +61,7 @@ export const depositLogTable = pgTable('deposit_logs', {
   id: uuid().defaultRandom().primaryKey().notNull(),
   userId: uuid('user_id')
     .notNull()
-    .references(() => userTable.id), // <-- Synchronous thunk
+    .references(() => userTable.id),
   operatorId: uuid('operator_id').notNull().default(HOUSE_ID),
   amount: integer().notNull(),
   method: depositMethodEnum('method').notNull(),
@@ -80,9 +84,9 @@ export const bonusLogTable = pgTable('bonus_logs', {
   id: uuid().defaultRandom().primaryKey().notNull(),
   userId: uuid('user_id')
     .notNull()
-    .references(() => userTable.id), // <-- Synchronous thunk
+    .references(() => userTable.id),
   operatorId: uuid('operator_id').notNull().default(HOUSE_ID),
-  triggeringDepositId: uuid('triggering_deposit_id').references(() => depositLogTable.id), // <-- This is fine (same file)
+  triggeringDepositId: uuid('triggering_deposit_id').references(() => depositLogTable.id),
   bonusType: bonusTypeEnum('bonus_type').notNull(),
   bonusAmount: integer().notNull(),
   wageringRequirementTotal: integer().notNull(),
@@ -101,7 +105,7 @@ export const withdrawalLogTable = pgTable('withdrawal_logs', {
   id: uuid().defaultRandom().primaryKey().notNull(),
   userId: uuid('user_id')
     .notNull()
-    .references(() => userTable.id), // <-- Synchronous thunk
+    .references(() => userTable.id),
   operatorId: uuid('operator_id').notNull().default(HOUSE_ID),
   status: withdrawalStatusEnum('status').default('PENDING').notNull(),
   amount: integer().notNull(),
@@ -125,7 +129,7 @@ export const betLogTable = pgTable(
     id: uuid().defaultRandom().primaryKey().notNull(),
     userId: uuid('user_id')
       .notNull()
-      .references(() => userTable.id), // <-- Synchronous thunk
+      .references(() => userTable.id),
     gameSessionId: uuid(),
     operatorId: uuid(),
     status: betStatusEnum('status').default('COMPLETED').notNull(),

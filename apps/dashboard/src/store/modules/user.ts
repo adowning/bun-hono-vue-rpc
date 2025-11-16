@@ -102,10 +102,17 @@ export const useUserStore = defineStore(
      * @param newRefreshToken 刷新令牌（可选）
      */
     const setToken = (newAccessToken: string, newRefreshToken?: string) => {
+      console.log('[UserStore] setToken called:', {
+        hasAccessToken: !!newAccessToken,
+        accessTokenLength: newAccessToken?.length || 0,
+        hasRefreshToken: !!newRefreshToken,
+        refreshTokenLength: newRefreshToken?.length || 0
+      })
       accessToken.value = newAccessToken
       if (newRefreshToken) {
         refreshToken.value = newRefreshToken
       }
+      console.log('[UserStore] Token set, accessToken:', accessToken.value ? `${accessToken.value.substring(0, 20)}...` : 'empty')
     }
 
     /**

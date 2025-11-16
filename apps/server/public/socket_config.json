@@ -1,0 +1,8 @@
+{
+  "port": "3000/ws/netgame",
+  "host": "api.andrewscarpetcleaning.com",
+  "prefix": "https://",
+  "host_ws": "localhost",
+  "prefix_ws": "ws://",
+  "ssl": false
+}

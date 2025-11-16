@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "apis": [
+    {
+      "identifier": "php",
+      "source": "./openapi.json",
+      "integrity": "sha512-0IWIqfZTqIWiXkhBEBmCHkAtcmKnmXAq8WgM6tBJIuCYAxU5kJDEOfN0EQYUrBoLSIYgP8gC0c0SJBAUo3agCw==",
+      "installerVersion": "6.1.3"
+    }
+  ]
+}

@@ -1,7 +1,6 @@
 import { pgTable, uuid, integer, boolean, text, jsonb, timestamp, index } from 'drizzle-orm/pg-core'
-// No more 'relations' import
 import { gameCategoriesEnum, gameStatusEnum, jackpotTypeEnum } from './_enums'
-// No more table imports
+import { goldsvetDataSchema, distinctPlayersSchema } from './_custom-types'
 
 /**
  * gameTable: Stores information about each available game.
@@ -21,9 +20,6 @@ export const gameTable = pgTable(
     bannerUrl: text(),
     volatility: integer().default(1).notNull(),
     developer: text(),
-    
-    // --- operatorId REMOVED (as discussed) ---
-    
     currentRtp: integer().default(0),
     targetRtp: integer(),
     status: gameStatusEnum('status').default('ACTIVE').notNull(),
@@ -34,13 +30,19 @@ export const gameTable = pgTable(
     hitPercentage: integer().default(0),
     totalPlayers: integer().default(0),
     totalMinutesPlayed: integer().default(0),
-    distinctPlayers: jsonb(),
+    
+    // --- UPDATED COLUMN ---
+    distinctPlayers: jsonb('distinct_players').$type<z.infer<typeof distinctPlayersSchema>>().default([]),
+    
     startedAt: timestamp({ withTimezone: true, mode: 'date' }).defaultNow(),
     minBet: integer().default(100),
     maxBet: integer().default(100000),
     isFeatured: boolean().default(false),
     jackpotGroup: jackpotTypeEnum('jackpot_group').default('NONE'),
-    goldsvetData: jsonb(),
+    
+    // --- UPDATED COLUMN ---
+    goldsvetData: jsonb('goldsvet_data').$type<z.infer<typeof goldsvetDataSchema>>(),
+    
     createdAt: timestamp({ withTimezone: true, mode: 'date' }).defaultNow(),
     updatedAt: timestamp({ withTimezone: true, mode: 'date' })
       .defaultNow()
@@ -48,12 +50,9 @@ export const gameTable = pgTable(
   },
   (t) => [
     index('category_index').on(t.category),
-    // index('games_operator_index').on(t.operatorId), // <-- Removed
     index('games_status_index').on(t.status)
   ]
 )
-
-// --- RELATIONS REMOVED (will be in relations.ts) ---
 
 // Types
 export type Game = typeof gameTable.$inferSelect

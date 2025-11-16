@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Server Test Harness</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+      .hidden {
+        display: none;
+      }
+      pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        margin: 0;
+        padding: 10px;
+      }
+      pre.success {
+        color: #34c759;
+        border-bottom: 1px dashed #333;
+      }
+      pre.error {
+        color: #ff3b30;
+        border-bottom: 1px dashed #333;
+      }
+      pre.ws-incoming {
+        color: #34c759;
+      }
+      pre.ws-outgoing {
+        color: #007aff;
+      }
+      pre.ws-error {
+        color: #ff3b30;
+      }
+      pre.ws-system {
+        color: #ff9f0a;
+      }
+
+      /* Game Modal Styles */
+      .game-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .game-modal {
+        width: 375px;
+        height: 667px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        position: relative;
+        cursor: move;
+        user-select: none;
+      }
+
+      .game-modal-header {
+        background: #1f2937;
+        color: white;
+        padding: 12px 16px;
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        cursor: move;
+      }
+
+      .game-modal-title {
+        flex: 1;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .game-modal-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+      }
+
+      .game-modal-close:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .game-modal-content {
+        width: 100%;
+        height: calc(667px - 56px);
+        border: none;
+        display: block;
+      }
+
+      .modal-hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-gray-100 font-sans p-5">
+    <div class="max-w-7xl mx-auto space-y-5">
+      <div id="websocket-panel" class="hidden bg-gray-800 rounded-lg p-6">
+        <!-- Connection Status -->
+        <div
+          id="ws-connection-status"
+          class="bg-red-600 text-white font-bold py-2 px-3 rounded-md mb-4 inline-block"
+        >
+          Disconnected
+        </div>
+
+        <!-- Connection Buttons -->
+        <div class="flex flex-row gap-2 mb-4 w-full">
+          <button
+            id="ws-connect-btn"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
+            >Connect to WebSocket</button
+          >
+          <button
+            id="ws-disconnect-btn"
+            class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md hidden"
+            >Disconnect</button
+          >
+        </div>
+
+        <!-- Messages Display -->
+        <div
+          id="ws-messages"
+          class="bg-gray-900 border border-gray-700 h-80 overflow-y-auto font-mono text-sm rounded-md"
+        >
+          <pre class="text-gray-400">WebSocket messages will appear here...</pre>
+        </div>
+      </div>
+      <!-- Auth Section -->
+      <div id="auth-section" class="bg-gray-800 rounded-lg p-6">
+        <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">1. Auth</h2>
+        <div class="space-y-4">
+          <input
+            type="email"
+            id="email"
+            placeholder="test@example.com"
+            value="testuser1@example.com"
+            class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded-md"
+          />
+          <input
+            type="password"
+            id="password"
+            placeholder="password"
+            value="password123"
+            class="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded-md"
+          />
+          <div class="flex gap-2">
+            <button
+              id="signup-btn"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
+              >Sign Up</button
+            >
+            <button
+              id="login-btn"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
+              >Log In</button
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- User Header -->
+      <div id="user-header" class="hidden bg-gray-800 rounded-lg p-4">
+        <span class="text-lg">Logged in as: <strong id="user-email"></strong></span>
+      </div>
+
+      <!-- Test Actions Container -->
+      <div id="test-actions-container" class="hidden">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <!-- Products Section -->
+          <div class="bg-gray-800 rounded-lg p-6">
+            <h3 class="text-lg font-semibold mb-4 border-b border-gray-600 pb-2">Products</h3>
+            <div class="space-y-4">
+              <div class="bg-gray-700 p-4 rounded-md">
+                <p class="font-semibold">Package One (500 credits)</p>
+                <p class="text-sm text-gray-300">Price: $2.00 | +1x WR</p>
+                <button
+                  class="buy-product-btn bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md mt-2"
+                  data-product-id="Package One"
+                  >Buy</button
+                >
+              </div>
+              <div class="bg-gray-700 p-4 rounded-md">
+                <p class="font-semibold">Package Two (1000 credits + 100 Bonus)</p>
+                <p class="text-sm text-gray-300">Price: $5.00 | +1x WR | +10x Bonus WR</p>
+                <button
+                  class="buy-product-btn bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md mt-2"
+                  data-product-id="Package Two"
+                  >Buy</button
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Betting Section -->
+          <div class="bg-gray-800 rounded-lg p-6">
+            <h3 class="text-lg font-semibold mb-4 border-b border-gray-600 pb-2">Betting</h3>
+            <div class="space-y-4">
+              <div class="grid grid-cols-3 gap-2 items-center text-sm">
+                <label for="game-id" class="text-right font-medium">Game ID:</label>
+                <input
+                  type="text"
+                  id="game-id"
+                  value="0a85d90f-8d97-42ce-94be-c99e7cad0d4b"
+                  class="col-span-2 p-2 bg-gray-700 text-white border border-gray-600 rounded-md"
+                />
+                <label for="wager-amount" class="text-right font-medium">Wager Amount:</label>
+                <input
+                  type="number"
+                  id="wager-amount"
+                  value="100"
+                  class="col-span-2 p-2 bg-gray-700 text-white border border-gray-600 rounded-md"
+                />
+                <label for="win-amount" class="text-right font-medium">Win Amount:</label>
+                <input
+                  type="number"
+                  id="win-amount"
+                  value="0"
+                  class="col-span-2 p-2 bg-gray-700 text-white border border-gray-600 rounded-md"
+                />
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  id="bet-btn"
+                  class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
+                  >Place Single Bet</button
+                >
+                <button
+                  id="loop-btn"
+                  class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-md"
+                  >Start Bet Loop (1/sec)</button
+                >
+                <button
+                  id="stop-loop-btn"
+                  class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md"
+                  >Stop Loop</button
+                >
+              </div>
+              <hr class="border-gray-600 my-4" />
+              <h4 class="font-semibold">Withdrawal</h4>
+              <div class="grid grid-cols-3 gap-2 items-center text-sm">
+                <label for="withdraw-amount" class="text-right font-medium">Amount (cents):</label>
+                <input
+                  type="number"
+                  id="withdraw-amount"
+                  value="1000"
+                  class="col-span-2 p-2 bg-gray-700 text-white border border-gray-600 rounded-md"
+                />
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  id="withdraw-btn"
+                  class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md"
+                  >Request Withdrawal</button
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Game Launcher Section -->
+          <div class="bg-gray-800 rounded-lg p-6">
+            <h3 class="text-lg font-semibold mb-4 border-b border-gray-600 pb-2">Game Launcher</h3>
+            <div class="space-y-4">
+              <div class="bg-gray-700 p-4 rounded-md">
+                <p class="font-semibold">AfricanKingNG (Test)</p>
+                <p class="text-sm text-gray-300">Provider: NetGame (Hosted)</p>
+                <button
+                  id="play-game-btn"
+                  class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md mt-2"
+                  >Play Game</button
+                >
+              </div>
+              <div class="bg-gray-700 p-4 rounded-md">
+                <p class="font-semibold">NarcosNET (Test)</p>
+                <p class="text-sm text-gray-300">Provider: NetEnt (Hosted)</p>
+                <button
+                  id="play-game2-btn"
+                  class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md mt-2"
+                  >Play Game</button
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Table -->
+      <div id="summary-table" class="hidden bg-gray-800 rounded-lg p-0 overflow-hidden">
+        <table class="w-full">
+          <thead>
+            <tr>
+              <th colspan="4" class="bg-gray-700 p-3 text-left font-semibold">Live Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="bg-gray-700 p-3 font-medium text-gray-200">Real Balance</td>
+              <td
+                id="summary-real"
+                class="bg-gray-600 p-3 font-mono font-bold text-green-400 text-lg"
+                >...</td
+              >
+              <td class="bg-gray-700 p-3 font-medium text-gray-200">Bonus Balance</td>
+              <td
+                id="summary-bonus"
+                class="bg-gray-600 p-3 font-mono font-bold text-green-400 text-lg"
+                >...</td
+              >
+            </tr>
+            <tr>
+              <td class="bg-gray-700 p-3 font-medium text-gray-200">Total Spendable</td>
+              <td
+                id="summary-total"
+                class="bg-gray-600 p-3 font-mono font-bold text-green-400 text-lg"
+                >...</td
+              >
+              <td class="bg-gray-700 p-3 font-medium text-gray-200">Deposit WR</td>
+              <td id="summary-deposit-wr" class="bg-gray-600 p-3 font-mono font-bold text-lg"
+                >...</td
+              >
+            </tr>
+            <tr>
+              <td class="bg-gray-700 p-3 font-medium text-gray-200">Bonus WR</td>
+              <td id="summary-bonus-wr" class="bg-gray-600 p-3 font-mono font-bold text-lg">...</td>
+              <td class="bg-gray-700 p-3 font-medium text-gray-200">Free Spins</td>
+              <td id="summary-spins" class="bg-gray-600 p-3 font-mono font-bold text-lg">...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Report Log -->
+      <div id="report-log" class="bg-gray-800 rounded-lg p-6">
+        <h3 class="text-lg font-semibold mb-4 border-b border-gray-600 pb-2">Test Log</h3>
+        <div
+          class="bg-gray-900 border border-gray-700 h-96 overflow-y-auto font-mono text-sm rounded-md"
+        >
+          <pre>Test log... waiting for actions.</pre>
+        </div>
+      </div>
+
+      <!-- WebSocket Panel -->
+    </div>
+
+    <!-- Game Modal -->
+    <div id="game-modal-overlay" class="game-modal-overlay modal-hidden">
+      <div id="game-modal" class="game-modal">
+        <div class="game-modal-header">
+          <div id="game-modal-title" class="game-modal-title">Game</div>
+          <button id="game-modal-close" class="game-modal-close">&times;</button>
+        </div>
+        <iframe id="game-modal-content" class="game-modal-content" src=""></iframe>
+      </div>
+    </div>
+
+    <script>
+      const SUPABASE_URL = 'https://crqbazcsrncvbnapuxcp.supabase.co'
+      const SUPABASE_ANON_KEY =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNycWJhemNzcm5jdmJuYXB1eGNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDk1MDYsImV4cCI6MjA3Njg4NTUwNn0.AQdRVvPqeK8l8NtTwhZhXKnjPIIcv_4dRU-bSZkVPs8'
+      const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+      let session = null
+      let betLoopInterval = null
+      let websocket = null
+
+      const emailInput = document.getElementById('email')
+      const passwordInput = document.getElementById('password')
+      const userEmailEl = document.getElementById('user-email')
+      const authSection = document.getElementById('auth-section')
+      const userHeader = document.getElementById('user-header')
+      const testActions = document.getElementById('test-actions-container')
+      const summaryTable = document.getElementById('summary-table')
+      const logOutput = document.getElementById('report-log')
+      const websocketPanel = document.getElementById('websocket-panel')
+      const wsConnectionStatus = document.getElementById('ws-connection-status')
+      const wsConnectBtn = document.getElementById('ws-connect-btn')
+      const wsDisconnectBtn = document.getElementById('ws-disconnect-btn')
+      const wsMessages = document.getElementById('ws-messages')
+
+      function log(type, title, data) {
+        const pre = document.createElement('pre')
+        pre.className = type
+        pre.innerHTML = `<strong>[${type.toUpperCase()}] ${title}</strong> - ${new Date().toLocaleTimeString()}\n${JSON.stringify(data, null, 2)}`
+        logOutput.querySelector('div').prepend(pre)
+
+        if (type === 'success' && title === 'POST /api/betting/outcome') {
+          updateSummary(data)
+        }
+      }
+
+      function updateSummary(data) {
+        const balanceData = data.balance ? data.balance : data
+        const wrData = data.wageringRequirements ? data.wageringRequirements : data
+
+        document.getElementById('summary-real').textContent = (
+          balanceData.realBalance / 100
+        ).toFixed(2)
+        document.getElementById('summary-bonus').textContent = (
+          balanceData.bonusBalance / 100
+        ).toFixed(2)
+        document.getElementById('summary-total').textContent = (
+          balanceData.totalBalance / 100
+        ).toFixed(2)
+
+        const depositWR = wrData?.deposit || 0
+        const bonusWR = wrData?.bonus || 0
+
+        const depositWREl = document.getElementById('summary-deposit-wr')
+        depositWREl.textContent = (depositWR / 100).toFixed(2)
+        depositWREl.className =
+          depositWR > 0
+            ? 'bg-gray-600 p-3 font-mono font-bold text-lg text-orange-400'
+            : 'bg-gray-600 p-3 font-mono font-bold text-lg'
+
+        const bonusWREl = document.getElementById('summary-bonus-wr')
+        bonusWREl.textContent = (bonusWR / 100).toFixed(2)
+        bonusWREl.className =
+          bonusWR > 0
+            ? 'bg-gray-600 p-3 font-mono font-bold text-lg text-orange-400'
+            : 'bg-gray-600 p-3 font-mono font-bold text-lg'
+
+        document.getElementById('summary-spins').textContent = balanceData.freeSpinsRemaining || 0
+      }
+
+      async function getAuthHeaders() {
+        if (!session) {
+          log('error', 'Auth Error', 'Not logged in')
+          return null
+        }
+        if (session.expires_at * 1000 < Date.now() - 5000) {
+          log('info', 'Auth', 'Refreshing session...')
+          const { data, error } = await sb.auth.refreshSession(session)
+          if (error) {
+            log('error', 'Auth Refresh Error', error)
+            return null
+          }
+          session = data.session
+        }
+        return {
+          Authorization: `Bearer ${session.access_token}`,
+          'X-State-Refresh': session.refresh_token,
+          'Content-Type': 'application/json'
+        }
+      }
+
+      async function updateUI(data) {
+        session = data.session
+        userEmailEl.textContent = data.user.email
+        authSection.classList.add('hidden')
+        userHeader.classList.remove('hidden')
+        testActions.classList.remove('hidden')
+        summaryTable.classList.remove('hidden')
+        websocketPanel.classList.remove('hidden')
+        await fetchUserBalance()
+      }
+
+      async function fetchUserBalance() {
+        const headers = await getAuthHeaders()
+        if (!headers) return
+
+        try {
+          const res = await fetch('/api/users/balance', { headers })
+          const data = await res.json()
+          if (!res.ok) throw data
+          log('success', 'GET /api/users/balance', data)
+          updateSummary(data)
+        } catch (e) {
+          log('error', 'GET /api/users/balance', e)
+        }
+      }
+
+      // --- AUTH ACTIONS ---
+      document.getElementById('signup-btn').onclick = async () => {
+        const email = emailInput.value
+        const password = passwordInput.value
+
+        const { data, error } = await sb.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              operatorId: '00000000-0000-0000-0000-000000000000',
+              full_name: email.split('@')[0]
+            }
+          }
+        })
+        if (error) return log('error', 'Sign Up Error', error)
+        log('success', 'Sign Up Success (Check email for verification)', data)
+        if (data.user && data.session) {
+          await updateUI(data)
+        }
+      }
+
+      document.getElementById('login-btn').onclick = async () => {
+        const email = emailInput.value
+        const password = passwordInput.value
+        const { data, error } = await sb.auth.signInWithPassword({ email, password })
+        if (error) return log('error', 'Login Error', error)
+        log('success', 'Login Success', data)
+        await updateUI(data)
+      }
+
+      // --- DEPOSIT/WITHDRAWAL ACTIONS ---
+      document.querySelectorAll('.buy-product-btn').forEach((button) => {
+        button.onclick = async (e) => {
+          const productId = e.target.dataset.productId
+          log('info', 'Deposit', `Initiating deposit for: ${productId}`)
+
+          const headers = await getAuthHeaders()
+          if (!headers) return
+
+          try {
+            const initRes = await fetch('/api/financial/deposit-initiate', {
+              method: 'POST',
+              headers,
+              body: JSON.stringify({ productId })
+            })
+            const initData = await initRes.json()
+            if (!initRes.ok) throw initData
+            log('success', 'POST /deposit-initiate', initData)
+
+            log('info', 'Deposit', 'Simulating payment completion...')
+            const completeRes = await fetch('/api/financial/deposit-complete', {
+              method: 'POST',
+              headers,
+              body: JSON.stringify({ depositId: initData.id })
+            })
+            const completeData = await completeRes.json()
+            if (!completeRes.ok) throw completeData
+            log('success', 'POST /deposit-complete', completeData)
+
+            await fetchUserBalance()
+          } catch (e) {
+            log('error', 'Deposit Flow Error', e)
+          }
+        }
+      })
+
+      document.getElementById('withdraw-btn').onclick = async () => {
+        const headers = await getAuthHeaders()
+        if (!headers) return
+
+        const amount = parseInt(document.getElementById('withdraw-amount').value, 10)
+
+        try {
+          const res = await fetch('/api/financial/withdrawal-request', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ amount })
+          })
+          const data = await res.json()
+          if (!res.ok) throw data
+          log('success', 'POST /withdrawal-request', data)
+          await fetchUserBalance()
+        } catch (e) {
+          log('error', 'Withdrawal Error', e)
+        }
+      }
+
+      // --- BETTING ACTIONS ---
+      async function placeBet() {
+        const headers = await getAuthHeaders()
+        if (!headers) return
+
+        const payload = {
+          gameId: document.getElementById('game-id').value,
+          gameSessionId: null,
+          wagerAmount: parseInt(document.getElementById('wager-amount').value, 10),
+          winAmount: parseInt(document.getElementById('win-amount').value, 10)
+        }
+
+        try {
+          const res = await fetch('/api/betting/outcome', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(payload)
+          })
+          const data = await res.json()
+          if (!res.ok) throw data
+          log('success', 'POST /api/betting/outcome', data)
+        } catch (e) {
+          log('error', 'POST /api/betting/outcome', e)
+          stopLoop()
+        }
+      }
+
+      document.getElementById('bet-btn').onclick = placeBet
+
+      document.getElementById('loop-btn').onclick = () => {
+        if (betLoopInterval) return
+        log('info', 'Bet Loop', 'Starting loop...')
+        betLoopInterval = setInterval(placeBet, 1000)
+      }
+
+      function stopLoop() {
+        if (betLoopInterval) {
+          log('info', 'Bet Loop', 'Stopping loop.')
+          clearInterval(betLoopInterval)
+          betLoopInterval = null
+        }
+      }
+
+      document.getElementById('stop-loop-btn').onclick = stopLoop
+
+      // --- MODAL FUNCTIONALITY ---
+      let isDragging = false
+      let dragStartX = 0
+      let dragStartY = 0
+      let modalStartX = 0
+      let modalStartY = 0
+
+      function openGameModal(gameUrl, gameTitle) {
+        const modalOverlay = document.getElementById('game-modal-overlay')
+        const modalTitle = document.getElementById('game-modal-title')
+        const modalContent = document.getElementById('game-modal-content')
+
+        modalTitle.textContent = gameTitle
+        modalContent.src = gameUrl
+        modalOverlay.classList.remove('modal-hidden')
+
+        log('info', 'Game Launch', `Opening ${gameTitle} in modal...`)
+      }
+
+      function closeGameModal() {
+        const modalOverlay = document.getElementById('game-modal-overlay')
+        const modalContent = document.getElementById('game-modal-content')
+        
+        modalContent.src = ''
+        modalOverlay.classList.add('modal-hidden')
+        
+        log('info', 'Game Close', 'Game modal closed')
+      }
+
+      function initModalDrag() {
+        const modal = document.getElementById('game-modal')
+        const modalHeader = document.querySelector('.game-modal-header')
+        const modalClose = document.getElementById('game-modal-close')
+        const modalOverlay = document.getElementById('game-modal-overlay')
+
+        // Mouse events for dragging
+        modalHeader.addEventListener('mousedown', (e) => {
+          isDragging = true
+          dragStartX = e.clientX
+          dragStartY = e.clientY
+          modalStartX = modal.offsetLeft
+          modalStartY = modal.offsetTop
+          modal.style.cursor = 'grabbing'
+        })
+
+        document.addEventListener('mousemove', (e) => {
+          if (!isDragging) return
+          
+          e.preventDefault()
+          const deltaX = e.clientX - dragStartX
+          const deltaY = e.clientY - dragStartY
+          
+          modal.style.left = modalStartX + deltaX + 'px'
+          modal.style.top = modalStartY + deltaY + 'px'
+          modal.style.position = 'fixed'
+        })
+
+        document.addEventListener('mouseup', () => {
+          if (isDragging) {
+            isDragging = false
+            modal.style.cursor = 'move'
+          }
+        })
+
+        // Close modal when clicking close button
+        modalClose.addEventListener('click', closeGameModal)
+
+        // Close modal when clicking outside
+        modalOverlay.addEventListener('click', (e) => {
+          if (e.target === modalOverlay) {
+            closeGameModal()
+          }
+        })
+
+        // Keyboard escape to close
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !modalOverlay.classList.contains('modal-hidden')) {
+            closeGameModal()
+          }
+        })
+      }
+
+      // Initialize modal functionality
+      initModalDrag()
+
+      // --- GAME LAUNCHER ACTION ---
+      document.getElementById('play-game-btn').onclick = () => {
+        if (!session) {
+          log('error', 'Game Launch', 'You must be logged in to play.')
+          return
+        }
+
+        const accessToken = session.access_token
+        const refreshToken = session.refresh_token
+
+        const gameName = 'africanKing.1'
+        const gameUrl = `/games/netgame/AfricanKingNG/index.html?game=${gameName}&access_token=${accessToken}&refresh_token=${refreshToken}`
+
+        openGameModal(gameUrl, 'AfricanKingNG')
+      }
+
+      document.getElementById('play-game2-btn').onclick = () => {
+        if (!session) {
+          log('error', 'Game Launch', 'You must be logged in to play.')
+          return
+        }
+
+        const accessToken = session.access_token
+        const refreshToken = session.refresh_token
+
+        const gameName = 'NarcosNET'
+        const gameUrl = `/games/netent/NarcosNET/index.html?game=${gameName}&access_token=${accessToken}&refresh_token=${refreshToken}`
+
+        openGameModal(gameUrl, 'NarcosNET')
+      }
+
+      // --- WEBSOCKET FUNCTIONALITY ---
+      function updateWsConnectionStatus(status, message) {
+        // Remove existing status classes
+        wsConnectionStatus.className = 'inline-block font-bold py-2 px-3 rounded-md mb-4'
+
+        switch (status) {
+          case 'disconnected':
+            wsConnectionStatus.classList.add('bg-red-600', 'text-white')
+            break
+          case 'connecting':
+            wsConnectionStatus.classList.add('bg-orange-500', 'text-white')
+            break
+          case 'connected':
+            wsConnectionStatus.classList.add('bg-green-600', 'text-white')
+            break
+        }
+        wsConnectionStatus.textContent = message
+      }
+
+      function addWsMessage(type, data) {
+        const pre = document.createElement('pre')
+        pre.className = type
+        const timestamp = new Date().toLocaleTimeString()
+        const content = typeof data === 'string' ? data : JSON.stringify(data, null, 2)
+        pre.innerHTML = `<strong>[${type.toUpperCase()}]</strong> ${timestamp}\n${content}`
+        wsMessages.prepend(pre)
+
+        // Keep only last 50 messages
+        while (wsMessages.children.length > 50) {
+          wsMessages.removeChild(wsMessages.lastChild)
+        }
+      }
+
+      function connectWebSocket() {
+        if (websocket && websocket.readyState === WebSocket.OPEN) {
+          addWsMessage('system', 'WebSocket already connected')
+          return
+        }
+
+        updateWsConnectionStatus('connecting', 'Connecting...')
+        addWsMessage('system', 'Attempting to connect to ws://localhost:3000/ws')
+
+        try {
+          websocket = new WebSocket(
+            `ws://localhost:3000/ws?access_token=${session.access_token},${session.refresh_token}`
+          )
+
+          websocket.onopen = () => {
+            updateWsConnectionStatus('connected', 'Connected')
+            wsConnectBtn.classList.add('hidden')
+            wsDisconnectBtn.classList.remove('hidden')
+            addWsMessage('system', 'WebSocket connection established')
+          }
+
+          websocket.onmessage = (event) => {
+            addWsMessage('ws-incoming', event.data)
+          }
+
+          websocket.onclose = (event) => {
+            updateWsConnectionStatus('disconnected', 'Disconnected')
+            wsConnectBtn.classList.remove('hidden')
+            wsDisconnectBtn.classList.add('hidden')
+            addWsMessage('system', `WebSocket connection closed: ${event.code} ${event.reason}`)
+            websocket = null
+          }
+
+          websocket.onerror = (error) => {
+            addWsMessage('ws-error', 'WebSocket error occurred')
+            updateWsConnectionStatus('disconnected', 'Connection Error')
+            console.error('WebSocket error:', error)
+          }
+        } catch (error) {
+          addWsMessage('ws-error', `Failed to create WebSocket: ${error.message}`)
+          updateWsConnectionStatus('disconnected', 'Failed to Connect')
+        }
+      }
+
+      function disconnectWebSocket() {
+        if (websocket) {
+          websocket.close()
+          websocket = null
+        }
+      }
+
+      // WebSocket event listeners
+      wsConnectBtn.onclick = connectWebSocket
+      wsDisconnectBtn.onclick = disconnectWebSocket
+
+      // Clean up websocket connection when user logs out
+      function cleanupWebSocket() {
+        if (websocket) {
+          websocket.close()
+          websocket = null
+        }
+        wsConnectBtn.classList.remove('hidden')
+        wsDisconnectBtn.classList.add('hidden')
+        updateWsConnectionStatus('disconnected', 'Disconnected')
+      }
+    </script>
+  </body>
+</html>

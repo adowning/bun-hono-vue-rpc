@@ -1,5 +1,5 @@
-import { getMe } from '@/api/client'
-import { fetchGetMenuList } from '@/api/system-manage'
+import { getMe } from '@/services/client'
+import { fetchGetMenuList } from '@/services/system-manage'
 import { useCommon } from '@/composables/useCommon'
 import { useMenuStore } from '@/store/modules/menu'
 import { useSettingStore } from '@/store/modules/setting'
@@ -36,6 +36,7 @@ export function setupBeforeEachGuard(router: Router): void {
       from: RouteLocationNormalized,
       next: NavigationGuardNext
     ) => {
+      console.log('[Router Guard] Navigation triggered:', { to: to.path, from: from.path, timestamp: new Date().toISOString() })
       try {
         await handleRouteGuard(to, from, next, router)
       } catch (error) {
@@ -82,6 +83,14 @@ async function handleRouteGuard(
   const settingStore = useSettingStore()
   const userStore = useUserStore()
 
+  console.log('[Router Guard] handleRouteGuard called:', {
+    toPath: to.path,
+    fromPath: from.path,
+    userStoreIsLogin: userStore.isLogin,
+    isRouteRegistered: isRouteRegistered.value,
+    localStorageUser: localStorage.getItem('user') ? 'exists' : 'missing'
+  })
+
   // 处理进度条
   if (settingStore.showNprogress) {
     NProgress.start()
@@ -94,6 +103,7 @@ async function handleRouteGuard(
 
   // 处理动态路由注册
   if (!isRouteRegistered.value && userStore.isLogin) {
+    console.log('[Router Guard] Dynamic routes not registered, handling...')
     await handleDynamicRoutes(to, from, next, router)
     return
   }
@@ -105,6 +115,7 @@ async function handleRouteGuard(
 
   // 处理已知的匹配路由
   if (to.matched.length > 0) {
+    console.log('[Router Guard] Route matched, proceeding:', to.matched.length)
     setWorktab(to)
     setPageTitle(to)
     next()
@@ -112,6 +123,7 @@ async function handleRouteGuard(
   }
 
   // 未匹配到路由，跳转到 404
+  console.log('[Router Guard] No route matched, going to 404')
   next({ name: 'Exception404' })
 }
 
@@ -126,7 +138,18 @@ async function handleLoginStatus(
   // 检查是否为静态路由（通过路由 name 判断）
   const isStaticRoute = isRouteInStaticRoutes(to.path)
 
+  console.log('[Router Guard] handleLoginStatus called:', {
+    toPath: to.path,
+    isStaticRoute,
+    userStoreIsLogin: userStore.isLogin,
+    userStoreHasInfo: !!userStore.info,
+    accessTokenExists: !!userStore.accessToken,
+    localStorageKeys: Object.keys(localStorage),
+    localStorageHasUser: localStorage.getItem('user') ? 'exists' : 'missing'
+  })
+
   if (!userStore.isLogin && to.path !== RoutesAlias.Login && !isStaticRoute) {
+    console.log('[Router Guard] Not logged in and not static route - redirecting to login')
     userStore.logOut()
     next({ name: 'Login' })
     return false
@@ -140,12 +163,23 @@ async function handleLoginStatus(
 function isRouteInStaticRoutes(path: string): boolean {
   const checkRoute = (routes: any[], targetPath: string): boolean => {
     return routes.some((route) => {
-      // 处理动态路由参数匹配
+      // 获取原始路由路径
       const routePath = route.path
+      
+      // 跳过通配符路由（404等），它们不应该被视为静态路由检查
+      if (routePath.includes('*') || routePath.includes(':pathMatch')) {
+        console.log('[Router Guard] Skipping wildcard route:', routePath)
+        return false
+      }
+      
+      // 处理动态路由参数匹配
       const pattern = routePath.replace(/:[^/]+/g, '[^/]+').replace(/\*/g, '.*')
       const regex = new RegExp(`^${pattern}$`)
 
+      console.log('[Router Guard] Checking route:', { routePath, targetPath, regex: pattern })
+
       if (regex.test(targetPath)) {
+        console.log('[Router Guard] Route matched:', routePath)
         return true
       }
       if (route.children && route.children.length > 0) {
@@ -155,7 +189,9 @@ function isRouteInStaticRoutes(path: string): boolean {
     })
   }
 
-  return checkRoute(staticRoutes, path)
+  const result = checkRoute(staticRoutes, path)
+  console.log('[Router Guard] isRouteInStaticRoutes result:', { path, result, staticRoutesCount: staticRoutes.length })
+  return result
 }
 
 /**

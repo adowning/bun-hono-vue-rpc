@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url'
 import { defineConfig, loadEnv } from 'vite'
 import viteCompression from 'vite-plugin-compression'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import devtoolsJson from 'vite-plugin-devtools-json';
 
 // import { visualizer } from 'rollup-plugin-visualizer'
 
@@ -24,15 +25,23 @@ export default ({ mode }: { mode: string }) => {
     define: {
       __APP_VERSION__: JSON.stringify(VITE_VERSION)
     },
-    base: VITE_BASE_URL,
+    base: '/dashboard/',
+    // base: VITE_BASE_URL,
     server: {
+      allowedHosts: ["game.cashflowcasino.com"],
       port: Number(VITE_PORT),
-      proxy: {
-        '/api': {
-          target: VITE_API_PROXY_URL,
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
-        }
+      origin: 'https://game.cashflowcasino.com',
+      // proxy: {
+      //   '/dashboard': {
+      //     target: 'http://localhost:3006/',
+      //     changeOrigin: true,
+      //     // rewrite: (path) => path.replace(/^\/api/, '')
+      // },
+
+      // },
+      hmr: {
+        clientPort: 443,
+        host: 'game.cashflowcasino.com/dashboard'
       },
       host: true
     },
@@ -87,6 +96,8 @@ export default ({ mode }: { mode: string }) => {
         dts: 'src/types/components.d.ts',
         resolvers: [ElementPlusResolver()]
       }),
+      devtoolsJson(),
+
       // 按需定制主题配置
       ElementPlus({
         useSource: true

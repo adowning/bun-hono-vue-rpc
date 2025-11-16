@@ -1,63 +1,97 @@
-import { db, gameTable } from '@/db'
-import { authMiddleware } from '@/middleware/auth'
-import type { AppBindings, PaginatedResponse, PaginationMeta, PaginationParams } from '@/shared'
-import { and, count, eq } from 'drizzle-orm'
+import { db, gameTable, eq, and, operatorTable, sql } from '@/db'
+import { authMiddleware, AppEnv } from '@/middleware/auth.middleware' // <-- Import new AppEnv
+import { PaginatedResponse } from '@/shared'
 import { Hono } from 'hono'
 import { createPaginatedQuery, getPaginationParams } from '@/utils/pagination'
+import { z } from 'zod'
+import { zValidator } from '@hono/zod-validator'
+import { phpBetService } from '@/services/php.service'
 
-const gameRoutes = new Hono<{ Variables: AppBindings }>()
+// Validation schema for PHP server route
+const PHPServerSchema = z.object({
+  gameName: z.string(),
+  gameData: z.object({
+    user: z.any(),
+    game: z.any(),
+    shop: z.any(),
+    bank: z.any(),
+    stat_in: z.any(),
+    stat_out: z.any()
+  }),
+  wagerAmount: z.number().min(0),
+  gameSessionId: z.string().uuid().nullable().optional()
+})
+
+const gameRoutes = new Hono<AppEnv>() // <-- Use new AppEnv
+
+export default gameRoutes
+
   .get('/', authMiddleware(), async (c) => {
-    const currentUser = c.get('currentUser')
-    console.log('here')
+    const user = c.get('user') // <-- Get LEAN user
+    console.log('GET /api/games initiated by user:', user.id)
 
     try {
-      if (!currentUser) {
+      if (!user) {
         return c.json({ error: 'User not authenticated' }, 401)
       }
-
-      // Ensure currentGame has operatorId
-      if (!currentUser.operatorId) {
+      if (!user.operatorId) {
         return c.json({ error: 'User operatorId not found' }, 400)
       }
 
-      // Parse and validate pagination parameters
+      // --- NEW LOGIC ---
+      // 1. Fetch the operator's settings
+      const operator = await db.query.operatorTable.findFirst({
+        where: eq(operatorTable.id, user.operatorId),
+        columns: { gameSettings: true }
+      })
+
+      const disabledGameIds = operator?.gameSettings?.disabledGames || []
+      // --- END NEW LOGIC ---
+
       const { error, params: paginationParams } = getPaginationParams(c)
-      if (error) {
-        return error
-      }
+      if (error) return error
       if (!paginationParams) return new Error('no pagination params')
-      const category = paginationParams?.category
+
+      const { category, page = 1, perPage = 10 } = paginationParams
+      const offset = (page - 1) * perPage
 
       // Build where conditions
       const where = []
       if (category) {
         where.push(eq(gameTable.category, category as any))
       }
+      // --- NEW LOGIC ---
+      // Add the "disabled games" filter
+      if (disabledGameIds.length > 0) {
+        where.push(sql`${gameTable.id} NOT IN ${disabledGameIds}`)
+      }
+      // --- END NEW LOGIC ---
+
       const whereConditions = where.length > 0 ? and(...where) : undefined
 
       const dataFetcher = (limit: number, offset: number) => {
-        return db
-          .select({
-            id: gameTable.id,
-            name: gameTable.name,
-            isActive: gameTable.isActive,
-            title: gameTable.title,
-            developer: gameTable.developer,
-            isFeatured: gameTable.isFeatured,
-            category: gameTable.category,
-            volatility: gameTable.volatility,
-            currentRtp: gameTable.currentRtp,
-            thumbnailUrl: gameTable.thumbnailUrl,
-            totalBetAmount: gameTable.totalBetAmount,
-            totalWonAmount: gameTable.totalWonAmount,
-            targetRtp: gameTable.targetRtp,
-            createdAt: gameTable.createdAt,
-            updatedAt: gameTable.updatedAt
-          })
-          .from(gameTable)
-          .where(whereConditions)
-          .limit(limit)
-          .offset(offset)
+        return db.query.gameTable.findMany({
+          columns: {
+            id: true,
+            name: true,
+            isActive: true,
+            title: true,
+            developer: true,
+            isFeatured: true,
+            category: true,
+            volatility: true,
+            currentRtp: true,
+            thumbnailUrl: true,
+            totalBetAmount: true,
+            totalWonAmount: true,
+            targetRtp: true,
+            createdAt: true,
+            updatedAt: true
+          },
+          where: whereConditions,
+          limit: limit,
+          offset: offset
+        })
       }
 
       const paginatedResult = await createPaginatedQuery(
@@ -74,50 +108,72 @@ const gameRoutes = new Hono<{ Variables: AppBindings }>()
 
       return c.json(response)
     } catch (error) {
+      console.error('Failed to fetch games:', error)
       return c.json({ error: 'Failed to fetch games' }, 500)
     }
   })
-  // *** FIX: Moved this route before /:id ***
 
-  // *** This dynamic route now comes AFTER /balances ***
-  .get('/:id', async (c) => {
-    const currentUser = c.get('user')
+  .get('/:id', authMiddleware(), async (c) => {
+    const user = c.get('user') // <-- Get LEAN user
     const gameId = c.req.param('id')
 
     try {
-      if (!currentUser) {
+      if (!user) {
         return c.json({ error: 'Game not authenticated' }, 401)
       }
 
-      // Ensure currentGame has operatorId
-      if (!currentUser.operatorId) {
-        return c.json({ error: 'Game operatorId not found' }, 400)
-      }
+      const game = await db.query.gameTable.findFirst({
+        where: eq(gameTable.id, gameId),
+        columns: {
+          id: true,
+          name: true,
+          title: true,
+          developer: true,
+          category: true,
+          thumbnailUrl: true,
+          createdAt: true,
+          updatedAt: true
+        }
+      })
 
-      // Get the requested game and verify they belong to the same operator
-      const games = await db
-        .select({
-          id: gameTable.id,
-          name: gameTable.name,
-          title: gameTable.title,
-          developer: gameTable.developer,
-          category: gameTable.category,
-          thumbnailUrl: gameTable.thumbnailUrl,
-          operatorId: gameTable.operatorId,
-          createdAt: gameTable.createdAt,
-          updatedAt: gameTable.updatedAt
-        })
-        .from(gameTable)
-        .where(and(eq(gameTable.id, gameId)))
-
-      if (games.length === 0) {
+      if (!game) {
         return c.json({ error: 'Game not found' }, 404)
       }
 
-      return c.json({ data: games[0] })
+      return c.json({ data: game })
     } catch (error) {
+      console.error('Failed to fetch game:', error)
       return c.json({ error: 'Failed to fetch game' }, 500)
     }
   })
+  .post('/:gameName/server', authMiddleware(), zValidator('json', PHPServerSchema), async (c) => {
+    console.log('hit')
+    const user = c.get('user')
+    const body = c.req.valid('json')
+    const gameId = c.req.param('gameName')
 
-export default gameRoutes
+    if (!user) {
+      return c.json({ error: 'User not authenticated' }, 401)
+    }
+
+    const { gameName, gameData, wagerAmount, gameSessionId = null } = body
+
+    try {
+      const result = await phpBetService.handlePhpBet(
+        user,
+        gameName,
+        gameData,
+        wagerAmount,
+        gameSessionId
+      )
+
+      if (!result.success) {
+        return c.json({ error: result.error }, 400)
+      }
+
+      return c.json(result)
+    } catch (err: any) {
+      console.error('Unhandled error in PHP server route:', err)
+      return c.json({ error: 'Internal server error', details: err.message }, 500)
+    }
+  })

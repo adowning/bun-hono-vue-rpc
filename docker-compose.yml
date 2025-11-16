@@ -1,0 +1,36 @@
+services:
+  postgrest:
+    image: postgrest/postgrest:v13.0.7
+    ports:
+      - "3000:3000"
+    environment:
+      PGRST_DB_URI: postgres://user:asdfasdf@db:5432/php_test?options=--search_path%3Dphp
+      PGRST_OPENAPI_SERVER_PROXY_URI: http://127.0.0.1:3000
+      PGRST_DB_SCHEMA: php
+      PGRST_DB_ANON_ROLE: user
+    depends_on:
+      - db
+  db:
+    image: postgres:18.0
+    shm_size: 128mb
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: app_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: asdfasdf
+    volumes:
+      - postgres-data:/var/lib/postgresql
+  swagger:
+    image: swaggerapi/swagger-ui:v5.29.1
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    environment:
+      API_URL: http://localhost:3000/
+    depends_on:
+      - postgrest
+
+volumes:
+  postgres-data:

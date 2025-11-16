@@ -2,6 +2,45 @@ import { router } from '@/router'
 import { useUserStore } from '@/store/modules/user'
 import { StorageConfig } from '@/utils/storage/storage-config'
 
+// 🛡️ LOCALSTORAGE MONITOR - Wrap localStorage to catch ALL clear() calls
+(() => {
+  if (!localStorage.__monitored) {
+    const originalClear = localStorage.clear.bind(localStorage);
+    localStorage.clear = function () {
+      console.log('🚨🚨🚨 LOCALSTORAGE.CLEAR() CALLED FROM UNEXPECTED SOURCE! 🚨🚨🚨');
+      console.log('Call stack:', new Error().stack);
+      console.log('Current localStorage keys:', Object.keys(localStorage));
+      
+      // Restore all operations for monitoring
+      if (!localStorage.__monitoringSet) {
+        const originalSetItem = localStorage.setItem.bind(localStorage);
+        const originalRemoveItem = localStorage.removeItem.bind(localStorage);
+        
+        localStorage.setItem = function(key, value) {
+          if (key.includes('user') || key.includes('auth') || key.includes('token')) {
+            console.log('🔑 Setting auth-related key:', key, 'Length:', value?.length || 0);
+          }
+          return originalSetItem(key, value);
+        };
+        
+        localStorage.removeItem = function(key) {
+          if (key.includes('user') || key.includes('auth') || key.includes('token')) {
+            console.log('🗑️ Removing auth-related key:', key);
+          }
+          return originalRemoveItem(key);
+        };
+        
+        localStorage.__monitoringSet = true;
+      }
+
+      // Don't actually clear it - just log for now to identify the source
+      return;
+    };
+    localStorage.__monitored = true;
+    console.log('🛡️ localStorage.clear() monitoring enabled');
+  }
+})();
+
 /**
  * 存储兼容性管理器
  * 负责处理不同版本间的存储兼容性检查和数据验证
@@ -77,7 +116,18 @@ class StorageCompatibilityManager {
   private performSystemLogout(): void {
     setTimeout(() => {
       try {
+        console.log('[Storage] 🔴 performSystemLogout called - This clears localStorage!')
+        
+        // 🛡️ CRITICAL: Backup authentication data before clearing
+        const authBackup = this.backupAuthData()
+        
+        console.log('[Storage] Before clear - localStorage keys:', Object.keys(localStorage))
         localStorage.clear()
+        console.log('[Storage] After clear - localStorage keys:', Object.keys(localStorage))
+        
+        // 🔄 Restore authentication after clear
+        this.restoreAuthData(authBackup)
+        
         useUserStore().logOut()
         router.push({ name: 'Login' })
         console.info('[Storage] 已执行系统登出')
@@ -88,9 +138,50 @@ class StorageCompatibilityManager {
   }
 
   /**
+   * Backup authentication data before localStorage.clear()
+   */
+  private backupAuthData(): any {
+    try {
+      const authData: any = {}
+      const keys = Object.keys(localStorage)
+      
+      // Backup all authentication-related keys
+      keys.forEach(key => {
+        if (key.includes('user') || key.includes('auth') || key.includes('token') || key.includes('sb-')) {
+          authData[key] = localStorage.getItem(key)
+        }
+      })
+      
+      console.log('[Storage] 🔐 Auth data backed up:', Object.keys(authData))
+      return authData
+    } catch (error) {
+      console.error('[Storage] Failed to backup auth data:', error)
+      return {}
+    }
+  }
+
+  /**
+   * Restore authentication data after localStorage.clear()
+   */
+  private restoreAuthData(backup: any): void {
+    try {
+      Object.keys(backup).forEach(key => {
+        if (backup[key]) {
+          localStorage.setItem(key, backup[key])
+          console.log('[Storage] 🔄 Restored auth key:', key)
+        }
+      })
+      console.log('[Storage] ✅ Auth data restoration complete')
+    } catch (error) {
+      console.error('[Storage] Failed to restore auth data:', error)
+    }
+  }
+
+  /**
    * 处理存储异常
    */
   private handleStorageError(): void {
+    console.log('handle storage errro')
     this.showStorageError()
     this.performSystemLogout()
   }
@@ -123,7 +214,7 @@ class StorageCompatibilityManager {
           return false
         }
         // 首次访问或访问静态路由，不需要登出
-        // console.debug('[Storage] 未发现存储数据，首次访问或访问静态路由')
+        console.log('[Storage] 未发现存储数据，首次访问或访问静态路由 - 无需登出')
         return true
       }
 
@@ -133,9 +224,12 @@ class StorageCompatibilityManager {
       console.error('[Storage] 存储数据验证失败:', error)
       // 只有在需要验证登录状态时才处理错误
       if (requireAuth) {
+        console.log('[Storage] 验证登录状态时发生错误，执行登出')
         this.handleStorageError()
         return false
       }
+      // 非认证模式下不执行登出
+      console.log('[Storage] 非认证模式下存储验证失败，但无需登出')
       return true
     }
   }
@@ -165,8 +259,11 @@ class StorageCompatibilityManager {
    */
   checkCompatibility(requireAuth: boolean = false): boolean {
     try {
+      console.log('[Storage] checkCompatibility called with requireAuth:', requireAuth)
       const isValid = this.validateStorageData(requireAuth)
       const isEmpty = this.isStorageEmpty()
+
+      console.log('[Storage] checkCompatibility result:', { isValid, isEmpty })
 
       if (isValid || isEmpty) {
         // console.debug('[Storage] 存储兼容性检查通过')

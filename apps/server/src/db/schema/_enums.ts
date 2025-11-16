@@ -68,6 +68,7 @@ export const sessionStatusEnum = pgEnum('session_status_enum', [
   'EXPIRED',
   'ABANDONED',
   'TIMEOUT',
-  'OTP_PENDING',
   'SHUTDOWN'
 ])
+
+export type SessionStatus = typeof sessionStatusEnum
