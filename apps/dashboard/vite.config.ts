@@ -32,11 +32,11 @@ export default ({ mode }: { mode: string }) => {
       port: Number(VITE_PORT),
       origin: 'https://game.cashflowcasino.com',
       // proxy: {
-      //   '/dashboard': {
-      //     target: 'http://localhost:3006/',
+      //   '/api': {
+      //     target: 'http://localhost:3000/',
       //     changeOrigin: true,
       //     // rewrite: (path) => path.replace(/^\/api/, '')
-      // },
+      //   },
 
       // },
       hmr: {

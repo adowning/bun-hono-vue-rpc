@@ -1,7 +1,7 @@
-import { pgTable, uuid, integer, boolean, text, jsonb, timestamp, index } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, integer, boolean, text, jsonb, timestamp, index, } from 'drizzle-orm/pg-core'
 import { gameCategoriesEnum, gameStatusEnum, jackpotTypeEnum } from './_enums'
 import { goldsvetDataSchema, distinctPlayersSchema } from './_custom-types'
-
+import z from 'zod'
 /**
  * gameTable: Stores information about each available game.
  * This is now the GLOBAL catalog.
@@ -12,7 +12,7 @@ export const gameTable = pgTable(
     id: uuid().defaultRandom().primaryKey().notNull(),
     version: integer().default(1).notNull(),
     isActive: boolean().default(true).notNull(),
-    name: text().notNull(),
+    name: text().notNull().unique(),
     title: text(),
     description: text(),
     category: gameCategoriesEnum('category').default('SLOTS').notNull(),
@@ -30,19 +30,19 @@ export const gameTable = pgTable(
     hitPercentage: integer().default(0),
     totalPlayers: integer().default(0),
     totalMinutesPlayed: integer().default(0),
-    
+
     // --- UPDATED COLUMN ---
     distinctPlayers: jsonb('distinct_players').$type<z.infer<typeof distinctPlayersSchema>>().default([]),
-    
+
     startedAt: timestamp({ withTimezone: true, mode: 'date' }).defaultNow(),
     minBet: integer().default(100),
     maxBet: integer().default(100000),
     isFeatured: boolean().default(false),
     jackpotGroup: jackpotTypeEnum('jackpot_group').default('NONE'),
-    
+
     // --- UPDATED COLUMN ---
     goldsvetData: jsonb('goldsvet_data').$type<z.infer<typeof goldsvetDataSchema>>(),
-    
+
     createdAt: timestamp({ withTimezone: true, mode: 'date' }).defaultNow(),
     updatedAt: timestamp({ withTimezone: true, mode: 'date' })
       .defaultNow()
@@ -50,7 +50,7 @@ export const gameTable = pgTable(
   },
   (t) => [
     index('category_index').on(t.category),
-    index('games_status_index').on(t.status)
+    index('games_status_index').on(t.status),
   ]
 )
 

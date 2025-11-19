@@ -25,10 +25,15 @@ export const gameSessionTable = pgTable(
     userId: uuid('user_id')
       .notNull()
       .references(() => userTable.id),
-    gameId: uuid('game_id')
+    gameName: text('game_name')
       .notNull()
-      .references(() => gameTable.id),
-    gameName: text(),
+      .references(() => gameTable.name),
+    gameId: uuid('game_id')
+      .notNull(),
+    // .references(() => gameTable.id),
+    // gameIdx: uuid('game_idx')
+    //   .notNull()
+    //   .references(() => gameTable.id),
     status: sessionStatusEnum('status').default('ACTIVE').notNull(),
     totalWagered: integer().default(0),
     totalWon: integer().default(0),
@@ -37,10 +42,10 @@ export const gameSessionTable = pgTable(
     playerStartingBalance: integer(),
     playerEndingBalance: integer(),
     duration: integer().default(0),
-    
+
     // --- NEW COLUMN for PHP game state ---
     sessionData: jsonb('session_data'),
-    
+
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
       .defaultNow()

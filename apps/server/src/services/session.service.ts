@@ -1,4 +1,4 @@
-import { db, eq, and, SessionStatus, gameSessionTable, GameSession } from '@/db'
+import { db, eq, and, SessionStatus, gameSessionTable, GameSession, gameTable } from '@/db'
 import type { PgTransaction } from 'drizzle-orm/pg-core'
 
 export interface AuthSession {
@@ -33,7 +33,7 @@ class SessionService {
    */
   async getOrCreateGameSession(
     userId: string,
-    gameId: string,
+    gameName: string,
     tx?: PgTransaction<any, any, any>
   ): Promise<GameSession> {
     const dbClient = tx || this.db
@@ -41,7 +41,7 @@ class SessionService {
     const activeSession = await dbClient.query.gameSessionTable.findFirst({
       where: and(
         eq(gameSessionTable.userId, userId),
-        eq(gameSessionTable.gameId, gameId),
+        eq(gameSessionTable.gameName, gameName),
         eq(gameSessionTable.status, 'ACTIVE')
       )
     })
@@ -49,12 +49,17 @@ class SessionService {
     if (activeSession) {
       return activeSession
     }
-
+    const gamesList = await dbClient.select({ name: gameTable.name }).from(gameTable)
+    console.log(gamesList)
+    const [game] = await dbClient.select().from(gameTable).where(eq(gameTable.name, gameName))
+    console.log(game)
     // Create a new one
+    if (!game) throw new Error(gameName)
     const [newSession] = await dbClient.insert(gameSessionTable)
       .values({
+        gameId: game.id,
         userId: userId,
-        gameId: gameId,
+        gameName: gameName,
         status: 'ACTIVE'
         // sessionData will be populated by the game logic
       })

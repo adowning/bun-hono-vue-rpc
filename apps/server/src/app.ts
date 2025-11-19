@@ -102,14 +102,14 @@ app.get('/public/sw.js', async (c) => {
 // })
 // Serve static files from /public directory
 app.use('/public/*', serveStatic({
-  root: './apps/server/public',
+  root: './apps/public',
   rewriteRequestPath: (path) => {
     // Remove the /public prefix to get the correct file path
     return path.replace(/^\/public/, '')
   }
 }))
 app.use('/games/*', serveStatic({
-  root: './apps/server/public',
+  root: './apps/public',
   rewriteRequestPath: (path) => {
     // Remove the /public prefix to get the correct file path
     return path.replace(/^\/public/, '')
